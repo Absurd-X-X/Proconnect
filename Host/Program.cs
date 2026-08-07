@@ -1,0 +1,247 @@
+using Application.Common.Repositories;
+using Application.Contract.Settings;
+using Application.Services.Interfaces;
+using Domain.Entities;
+using Infrastructure.Authentication;
+using Infrastructure.Hubs;
+using Infrastructure.Persistence.Context;
+using Infrastructure.Persistence.Repositories;
+using Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers();
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+
+// ==========================================
+// Framework Services
+// ==========================================
+
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddSignalR();
+
+builder.Services.AddAuthorization();
+
+
+// ==========================================
+// MediatR
+// ==========================================
+
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(Application.Commands.Login).Assembly);
+});
+
+
+builder.Services.AddDbContext<ProConnectDbContext>(config =>
+    config.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection"))
+          .LogTo(Console.WriteLine, LogLevel.Information)
+          .EnableSensitiveDataLogging());
+
+
+// ==========================================
+// AutoMapper (if using AutoMapper)
+// ==========================================
+
+// builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+
+
+// ==========================================
+// Authentication
+// ==========================================
+
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
+builder.Services.AddScoped<ITokenServices, TokenService>();
+
+//builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+
+
+// ==========================================
+// Email
+// ==========================================
+
+builder.Services.AddScoped<IEmailService, EmailService>();
+
+
+// ==========================================
+// Unit Of Work
+// ==========================================
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
+// ==========================================
+// Repositories
+// ==========================================
+
+// User
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+// Professional Profile
+builder.Services.AddScoped<IProfessionalProfileRepository, ProfessionalProfileRepository>();
+
+// Recruiter Profile
+builder.Services.AddScoped<IRecruiterProfileRepository, RecruiterProfileRepository>();
+
+// Company
+builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+
+// Experience
+builder.Services.AddScoped<IExperienceRepository, ExperienceRepository>();
+
+// Education
+builder.Services.AddScoped<IEducationRepository, EducationRepository>();
+
+// Skill
+//builder.Services.AddScoped<ISkillRepository, SkillRepository>();
+
+// Professional Skill
+builder.Services.AddScoped<IProfessionalSkillRepository, ProfessionalSkillRepository>();
+
+// Project
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+
+// Certificate
+builder.Services.AddScoped<ICertificateRepository, CertificateRepository>();
+
+//// Job
+//builder.Services.AddScoped<IJobRepository, JobRepository>();
+
+//// Job Application
+//builder.Services.AddScoped<IJobApplicationRepository, JobApplicationRepository>();
+
+//// Notification
+//builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+
+//// Message
+//builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+
+//// User Connection
+//builder.Services.AddScoped<IUserConnectionRepository, UserConnectionRepository>();
+
+ //Audit Log
+builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+
+
+
+builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+
+
+builder.Services.Configure<JwtSetiings>(builder.Configuration.GetSection("Jwt"));
+
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSetiings>();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
+{
+    opt.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings.Issuer,
+        ValidAudience = jwtSettings.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+    };
+});
+
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Proconnect Api",
+        Version = "v1",
+        Description = "Api for professional networking"
+    });
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the bearer scheme. Enter your token in the text input below."
+    });
+
+    options.AddSecurityRequirement(document =>
+    new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
+    });
+});
+
+
+
+
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
+
+builder.Services.Configure<FileSettings>(
+    builder.Configuration.GetSection("FileSettings"));
+
+builder.Services.Configure<AppSettings>(
+    builder.Configuration.GetSection("AppSettings"));
+
+
+
+// ==========================================
+// CORS
+// ==========================================
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://127.0.0.1:5500",
+                "http://localhost:5500")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+
+app.MapHub<NotificationHub>("/notificationHub");
+app.MapHub<ChatHub>("/chatHub");
+
+
+app.UseCors("AllowFrontend");
+
+app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
