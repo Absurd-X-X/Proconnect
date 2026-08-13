@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using static Application.Commands.CreateCompany;
-using static Application.Commands.CreateRecruiterProfile;
+using static Application.Commands.Recruiter.CreateCompany;
+using static Application.Commands.Recruiter.CreateRecruiterProfile;
 
 namespace Host.Controllers.Recruiter
 {

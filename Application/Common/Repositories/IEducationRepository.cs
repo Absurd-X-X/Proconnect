@@ -1,13 +1,18 @@
-﻿using Domain.Entities;
+﻿using Application.Common.Pagenation;
+using Domain.Entities;
 
 namespace Application.Common.Repositories
 {
     public interface IEducationRepository
     {
-        Task AddAsync(Education education);
+        Task CreateAsync(Education education);
 
         Task<Education?> GetByIdAsync(Guid id);
 
-        void Update(Education education);
+        Task<PageResponse<Education>> GetByProfessionalProfileIdAsync(PageRequest request, bool usePaging, Guid professionalProfileId);
+
+        void UpdateAsync(Education education);
+
+        void Delete(Education education);
     }
 }

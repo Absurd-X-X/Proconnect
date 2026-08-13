@@ -31,6 +31,7 @@ namespace Infrastructure.Persistence.Context
         public DbSet<Job> Jobs { get; set; }
 
         public DbSet<JobApplication> JobApplications { get; set; }
+
         public DbSet<JobCategory> JobCategories { get; set; }
 
         public DbSet<Message> Messages { get; set; }
@@ -41,11 +42,13 @@ namespace Infrastructure.Persistence.Context
 
         public DbSet<PostLike> PostLikes { get; set; }
 
-        public DbSet<ProfessionalProfile> professionalProfiles { get; set; }
+        public DbSet<ProfessionalProfile> ProfessionalProfiles { get; set; }
 
         public DbSet<ProfessionalSkill> ProfessionalSkills { get; set; }
 
         public DbSet<Project> Projects { get; set; }
+
+        public DbSet<PortfolioLink> PortfolioLinks { get; set; }
 
         public DbSet<RecruiterProfile> RecruiterProfiles { get; set; }
 

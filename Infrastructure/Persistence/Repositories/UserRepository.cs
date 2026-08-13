@@ -10,7 +10,7 @@ namespace Infrastructure.Persistence.Repositories
     {
         public async Task<int> CountAsync()
         {
-            return await proConnectDb.Users.CountAsync();
+            return await proConnectDb.Users.CountAsync(x => !x.IsDeleted);
         }
 
         public async Task CreateAsync(User user)
@@ -20,7 +20,7 @@ namespace Infrastructure.Persistence.Repositories
 
         public async Task<bool> ExistsByEmailAsync(string email)
         {
-            return await proConnectDb.Users.AnyAsync(u => u.Email == email);
+            return await proConnectDb.Users.AnyAsync(u => u.Email == email && !u.IsDeleted);
         }
 
         public async Task<bool> ExistsByUserNameAsync(string userName)
@@ -69,7 +69,7 @@ namespace Infrastructure.Persistence.Repositories
 
                 .Include(x => x.ProfessionalProfile)
 
-                .FirstOrDefaultAsync(u => u.Email == email);
+                .FirstOrDefaultAsync(u => u.Email == email && !u.IsDeleted);
         }
 
         public async Task<User?> GetByIdAsync(Guid id)
@@ -80,7 +80,7 @@ namespace Infrastructure.Persistence.Repositories
 
                 .Include(x => x.ProfessionalProfile)
 
-                .FirstOrDefaultAsync(u => u.Id == id);
+                .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
         }
 
         public async Task<User?> GetByPasswordResetTokenAsync(string token)
@@ -91,7 +91,7 @@ namespace Infrastructure.Persistence.Repositories
 
                 .Include(x => x.ProfessionalProfile)
 
-                .FirstOrDefaultAsync(u => u.PasswordResetToken == token);
+                .FirstOrDefaultAsync(u => u.PasswordResetToken == token && !u.IsDeleted);
         }
 
         public async Task<User?> GetByRefreshTokenAsync(string refreshToken)
@@ -102,7 +102,7 @@ namespace Infrastructure.Persistence.Repositories
 
                 .Include(x => x.ProfessionalProfile)
 
-                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken && !u.IsDeleted);
         }
 
         public async Task<User?> GetByUserNameAsync(string userName)
@@ -113,7 +113,7 @@ namespace Infrastructure.Persistence.Repositories
 
                 .Include(x => x.ProfessionalProfile)
 
-                .FirstOrDefaultAsync(u => u.UserName == userName);
+                .FirstOrDefaultAsync(u => u.UserName == userName && !u.IsDeleted);
         }
 
         public async Task<User?> GetByVerificationTokenAsync(string token)
@@ -124,7 +124,7 @@ namespace Infrastructure.Persistence.Repositories
 
                 .Include(x => x.ProfessionalProfile)
 
-                .FirstOrDefaultAsync(u => u.VerificationToken == token);
+                .FirstOrDefaultAsync(u => u.VerificationToken == token && !u.IsDeleted);
         }
 
         public async Task<IEnumerable<User>> SearchAsync(string keyword)
@@ -135,7 +135,7 @@ namespace Infrastructure.Persistence.Repositories
 
                 .Include(x => x.ProfessionalProfile)
 
-                .Where(u => u.FirstName.Contains(keyword) || u.LastName.Contains(keyword) || u.UserName.Contains(keyword) || u.Email.Contains(keyword))
+                .Where(u => u.FirstName.Contains(keyword) || u.LastName.Contains(keyword) || u.UserName.Contains(keyword) || u.Email.Contains(keyword) && !u.IsDeleted)
 
                 .ToListAsync();
         }

@@ -149,6 +149,14 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("CompanySize")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CompanyType")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -165,17 +173,50 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
+                    b.Property<string>("FacebookUrl")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("FoundedYear")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Headquarters")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Industry")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
+                    b.Property<string>("InstagramUrl")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("InvitationCode")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("InvitationCodeExpiry")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("LinkedInUrl")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Locations")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Logo")
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
+
+                    b.Property<string>("LogoPublicId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LogoUrl")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -186,6 +227,15 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
+
+                    b.Property<string>("Strengths")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("TwitterUrl")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("VerifiedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Website")
                         .HasMaxLength(500)
@@ -228,7 +278,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b235f2ed-bb4e-4bd2-a03d-0e3c17aaf2e2"),
                             CreatedBy = "c117635d-96e0-409b-9fae-72976ec9c42a",
-                            DateCreated = new DateTime(2026, 8, 6, 13, 47, 3, 943, DateTimeKind.Utc).AddTicks(713),
+                            DateCreated = new DateTime(2026, 8, 13, 5, 47, 49, 656, DateTimeKind.Utc).AddTicks(4945),
                             DateModified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             Title = "Soulshelf Group Chat"
@@ -270,11 +320,11 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("449189ac-8cee-4a9a-8484-8e3e41147cad"),
+                            Id = new Guid("21a6dfbc-5c10-4c45-8c1c-56d5adfd252c"),
                             ConversationId = new Guid("b235f2ed-bb4e-4bd2-a03d-0e3c17aaf2e2"),
                             CreatedBy = "c117635d-96e0-409b-9fae-72976ec9c42a",
                             IsDeleted = false,
-                            JoinedAt = new DateTime(2026, 8, 6, 13, 47, 3, 944, DateTimeKind.Utc).AddTicks(4419),
+                            JoinedAt = new DateTime(2026, 8, 13, 5, 47, 49, 657, DateTimeKind.Utc).AddTicks(4704),
                             UserId = "c117635d-96e0-409b-9fae-72976ec9c42a"
                         });
                 });
@@ -559,8 +609,10 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("ProfessionalProfileId")
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("ResumePublicId")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("ResumeUrl")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
@@ -698,6 +750,65 @@ namespace Infrastructure.Migrations
                     b.ToTable("Notification", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.PortfolioLink", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("ClickCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("LinkType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<Guid>("ProfessionalProfileId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ThumbnailPublicId")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ThumbnailUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int>("ViewCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProfessionalProfileId");
+
+                    b.ToTable("PortfolioLinks", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.Post", b =>
                 {
                     b.Property<Guid>("Id")
@@ -779,6 +890,11 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("AvailabilityVisibility")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -787,6 +903,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<DateTime>("DateModified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("EarliestStartDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("GitHubUrl")
@@ -804,13 +923,27 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
-                    b.Property<string>("PortfolioUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
+                    b.Property<string>("PreferredJobTypes")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PreferredLocations")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ResumeDownloadCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResumePublicId")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("ResumeUrl")
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
+
+                    b.Property<int>("ResumeViewCount")
+                        .HasColumnType("int");
 
                     b.Property<string>("Summary")
                         .HasColumnType("longtext");
@@ -820,6 +953,14 @@ namespace Infrastructure.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("UserStatus")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<bool>("WillingToRelocate")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("WorkAuthorization")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
@@ -844,6 +985,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Level")
                         .IsRequired()
@@ -943,6 +1087,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("JobTitle")
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -1130,7 +1277,10 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("PasswordResetTokenExpiry")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("ProfilePicture")
+                    b.Property<string>("ProfilePicturePublicId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ProfilePictureUrl")
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
@@ -1171,11 +1321,11 @@ namespace Infrastructure.Migrations
                             Id = "c117635d-96e0-409b-9fae-72976ec9c42a",
                             Bio = "I am the administrator of this platform.",
                             CreatedBy = "system",
-                            DateCreated = new DateTime(2026, 8, 6, 13, 47, 3, 858, DateTimeKind.Utc).AddTicks(1049),
+                            DateCreated = new DateTime(2026, 8, 13, 5, 47, 49, 575, DateTimeKind.Utc).AddTicks(8459),
                             DateModified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@gmail.com",
                             FirstName = "Ajibike",
-                            HashedPassword = "AQAAAAIAAYagAAAAEI3QFYjf0rjM1O1hopXeG3vNNtit0Wppv2566iWI6Kbfjq4pQgpfD421nFe/LwAZdA==",
+                            HashedPassword = "AQAAAAIAAYagAAAAEPNEImM+64fT1vZnS2O3YRM05aOKeFuso+Tazydf8qTEq/kI4mtTRnv1FmeDuWthnA==",
                             IsActive = true,
                             IsDeleted = false,
                             IsVerified = true,
@@ -1395,6 +1545,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Entities.PortfolioLink", b =>
+                {
+                    b.HasOne("Domain.Entities.ProfessionalProfile", "ProfessionalProfile")
+                        .WithMany("PortfolioLinks")
+                        .HasForeignKey("ProfessionalProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProfessionalProfile");
+                });
+
             modelBuilder.Entity("Domain.Entities.Post", b =>
                 {
                     b.HasOne("Domain.Entities.User", "User")
@@ -1593,6 +1754,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("Experiences");
 
                     b.Navigation("JobApplications");
+
+                    b.Navigation("PortfolioLinks");
 
                     b.Navigation("ProfessionalSkills");
 

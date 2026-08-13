@@ -1,13 +1,21 @@
-﻿using Domain.Entities;
+﻿using Application.Common.Pagenation;
+using Domain.Entities;
 
-namespace Application.Common.Repositories
+namespace Application.Common.Repositories;
+
+public interface IProfessionalProfileRepository
 {
-    public interface IProfessionalProfileRepository
-    {
-        Task AddProfessionalProfile(ProfessionalProfile profile);
+    Task AddAsync(ProfessionalProfile profile);
 
-        Task<ProfessionalProfile?> GetByUserIdAsync(Guid userId);
+    Task<ProfessionalProfile?> GetByIdAsync(Guid id);
 
-        void Update(ProfessionalProfile profile);
-    }
+    Task<ProfessionalProfile?> GetByUserIdAsync(Guid userId);
+
+    Task<ProfessionalProfile?> GetWithDetailsAsync(Guid id);
+
+    Task<PageResponse<ProfessionalProfile>> GetAllAsync(PageRequest request, bool usePaging);
+
+    void Update(ProfessionalProfile profile);
+
+    void Delete(ProfessionalProfile profile);
 }

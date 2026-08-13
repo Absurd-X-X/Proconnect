@@ -16,7 +16,9 @@ namespace Domain.Entities
 
         public string CoverLetter { get; set; } = default!;
 
-        public string ResumeUrl { get; set; } = default!;   
+        public string? ResumeUrl { get; set; }
+
+        public string? ResumePublicId { get; set; }
 
         public JobStatus JobStatus { get; set; }
 

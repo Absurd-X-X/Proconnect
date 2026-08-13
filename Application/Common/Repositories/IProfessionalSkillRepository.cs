@@ -1,13 +1,18 @@
-﻿using Domain.Entities;
+﻿using Application.Common.Pagenation;
+using Domain.Entities;
 
 namespace Application.Common.Repositories
 {
     public interface IProfessionalSkillRepository
     {
-        Task AddAsync(ProfessionalSkill professionalSkill);
+        Task CreateAsync(ProfessionalSkill skill);
 
-        Task<bool> ExistsAsync(
-            Guid professionalProfileId,
-            Guid skillId);
+        Task<ProfessionalSkill?> GetByIdAsync(Guid id);
+
+        Task<PageResponse<ProfessionalSkill>> GetByProfessionalProfileIdAsync(PageRequest request, bool usePaging, Guid professionalProfileId);
+
+        Task<bool> ExistsAsync(Guid professionalProfileId, Guid skillId);
+
+        void Delete(ProfessionalSkill skill);
     }
 }

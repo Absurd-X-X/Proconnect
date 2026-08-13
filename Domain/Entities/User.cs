@@ -14,11 +14,13 @@
 
         public string HashedPassword { get; set; } = default!;
 
-        public string? Tel { get; set; } = default!;
+        public string? Tel { get; set; }
 
         public string Role { get; set; } = default!;
 
-        public string? ProfilePicture { get; set; } = default!;
+        public string? ProfilePictureUrl { get; set; }
+
+        public string? ProfilePicturePublicId { get; set; }
 
         public string Bio { get; set; } = default!;
 

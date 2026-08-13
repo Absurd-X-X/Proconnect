@@ -1,3 +1,4 @@
+using Application.Commands.Authentication;
 using Application.Common.Repositories;
 using Application.Contract.Settings;
 using Application.Services.Interfaces;
@@ -7,11 +8,13 @@ using Infrastructure.Hubs;
 using Infrastructure.Persistence.Context;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Services;
+using Infrastructure.Storage.Cloudinary;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using ProConnect.Infrastructure.Repositories;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
@@ -42,12 +45,12 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssembly(typeof(Application.Commands.Login).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(Login).Assembly);
 });
 
 
 builder.Services.AddDbContext<ProConnectDbContext>(config =>
-    config.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection"))
+    config.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")!)
           .LogTo(Console.WriteLine, LogLevel.Information)
           .EnableSensitiveDataLogging());
 
@@ -92,7 +95,11 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Professional Profile
+
 builder.Services.AddScoped<IProfessionalProfileRepository, ProfessionalProfileRepository>();
+
+
+builder.Services.AddScoped<IPortfolioLinkRepository, PortfolioLinkRepository>();
 
 // Recruiter Profile
 builder.Services.AddScoped<IRecruiterProfileRepository, RecruiterProfileRepository>();
@@ -154,7 +161,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings.Issuer,
+        ValidIssuer = jwtSettings!.Issuer,
         ValidAudience = jwtSettings.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
     };
@@ -199,6 +206,11 @@ builder.Services.Configure<FileSettings>(
 
 builder.Services.Configure<AppSettings>(
     builder.Configuration.GetSection("AppSettings"));
+
+builder.Services.Configure<CloudinarySettings>(
+    builder.Configuration.GetSection("Cloudinary"));
+
+builder.Services.AddScoped<IFileStorage, CloudinaryFileStorage>();
 
 
 

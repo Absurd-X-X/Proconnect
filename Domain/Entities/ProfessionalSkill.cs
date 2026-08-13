@@ -19,5 +19,7 @@
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
         public string CreatedBy { get; set; } = default!;
+
+        public bool IsDeleted { get; set; }
     }
 }

@@ -18,6 +18,8 @@
 
         public string? Department { get; set; } = default!;
 
+        public RecruiterStatus Status { get; set; } = RecruiterStatus.Active;
+
         public bool IsDeleted { get; set; }
 
         public DateTime DateModified { get; set; }
@@ -27,5 +29,13 @@
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
         public ICollection<Job> Jobs { get; set; } = new HashSet<Job>();
+    }
+
+
+    public enum RecruiterStatus
+    {
+        Pending,
+        Active,
+        Suspended
     }
 }

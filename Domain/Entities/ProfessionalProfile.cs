@@ -14,15 +14,31 @@ namespace Domain.Entities
 
         public string? Summary { get; set; } = default!;
 
-        public string? PortfolioUrl { get; set; } = default!;
-
         public string? GitHubUrl { get; set; } = default!;
 
         public string? LinkedInUrl { get; set; } = default!;
 
         public string? ResumeUrl { get; set; } = default!;
 
+        public string? ResumePublicId { get; set; }
+
+        public int ResumeViewCount { get; set; }
+
+        public int ResumeDownloadCount { get; set; }
+
         public UserStatus UserStatus { get; set; }
+
+        public List<EmploymentType> PreferredJobTypes { get; set; } = new();
+
+        public List<string> PreferredLocations { get; set; } = new();
+
+        public DateTime? EarliestStartDate { get; set; }
+
+        public bool WillingToRelocate { get; set; }
+
+        public WorkAuthorizationStatus WorkAuthorization { get; set; }
+
+        public AvailabilityVisibility AvailabilityVisibility { get; set; }
 
         public bool IsDeleted { get; set; }
 
@@ -31,6 +47,7 @@ namespace Domain.Entities
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
         public DateTime DateModified { get; set; }
+
         public ICollection<SavedJob> SavedJobs { get; set; } = new HashSet<SavedJob>();
 
         public ICollection<Experience> Experiences { get; set; } = new HashSet<Experience>();
@@ -41,8 +58,10 @@ namespace Domain.Entities
 
         public ICollection<Education> Educations { get; set; } = new HashSet<Education>();
 
-        public ICollection <ProfessionalSkill> ProfessionalSkills { get; set; } = new HashSet<ProfessionalSkill>();
+        public ICollection<ProfessionalSkill> ProfessionalSkills { get; set; } = new HashSet<ProfessionalSkill>();
 
         public ICollection<JobApplication> JobApplications { get; set; } = new HashSet<JobApplication>();
+
+        public ICollection<PortfolioLink> PortfolioLinks { get; set; } = new HashSet<PortfolioLink>();
     }
 }

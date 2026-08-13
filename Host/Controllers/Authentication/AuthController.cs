@@ -1,16 +1,14 @@
-﻿
-using Application.Commands;
-using Host.Helpers;
+﻿using Host.Helpers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using static Application.Commands.ChangePassword;
-using static Application.Commands.ForgotPassword;
-using static Application.Commands.Login;
-using static Application.Commands.Register;
-using static Application.Commands.ResendVerification;
-using static Application.Commands.ResetPassword;
-using static Application.Commands.SetupAccount;
-using static Application.Commands.VerifyEmail;
+using static Application.Commands.Authentication.ChangePassword;
+using static Application.Commands.Authentication.ForgotPassword;
+using static Application.Commands.Authentication.Login;
+using static Application.Commands.Authentication.Register;
+using static Application.Commands.Authentication.ResendVerification;
+using static Application.Commands.Authentication.ResetPassword;
+using static Application.Commands.Authentication.SetupAccount;
+using static Application.Commands.Authentication.VerifyEmail;
 
 namespace Web.Controllers.Authentication
 {
