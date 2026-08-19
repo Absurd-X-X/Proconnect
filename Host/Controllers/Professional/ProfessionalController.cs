@@ -1,6 +1,12 @@
-﻿using Application.Common.Pagenation;
+﻿using Application.Commands;
+using Application.Common.Pagenation;
+using Host.Helpers;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static Application.Commands.Authentication.UpdateUserBasicInfo;
+using static Application.Commands.Authentication.UploadProfilePicture;
+using static Application.Commands.Authentication.UploadProfilePicture.UploadProfilePictureHandler;
 using static Application.Commands.Professional.AddCertificate;
 using static Application.Commands.Professional.AddEducation;
 using static Application.Commands.Professional.AddExperience;
@@ -11,6 +17,7 @@ using static Application.Commands.Professional.DeleteCertificate;
 using static Application.Commands.Professional.DeleteEducation;
 using static Application.Commands.Professional.DeleteExperience;
 using static Application.Commands.Professional.DeleteProject;
+using static Application.Commands.Professional.DeleteResume;
 using static Application.Commands.Professional.RemoveProfessionalSkill;
 using static Application.Commands.Professional.TrackResumeDownload;
 using static Application.Commands.Professional.TrackResumeView;
@@ -22,18 +29,19 @@ using static Application.Commands.Professional.UpdatePortfolioLink;
 using static Application.Commands.Professional.UpdateProfessionalProfile;
 using static Application.Commands.Professional.UpdateProject;
 using static Application.Commands.Professional.UploadResume;
-using static Application.Queries.GetCertificateById;
-using static Application.Queries.GetCertificatesByProfile;
-using static Application.Queries.GetEducationById;
-using static Application.Queries.GetEducationsByProfile;
-using static Application.Queries.GetExperienceById;
-using static Application.Queries.GetExperiencesByProfile;
-using static Application.Queries.GetPortfolioLinksByProfile;
-using static Application.Queries.GetProfessionalProfile;
-using static Application.Queries.GetProfessionalSkillById;
-using static Application.Queries.GetProfessionalSkillsByProfile;
-using static Application.Queries.GetProjectById;
-using static Application.Queries.GetProjectsByProfile;
+using static Application.Commands.UploadCompanyLogo.UploadCompanyLogoHandler;
+using static Application.Queries.Professional.GetCertificateById;
+using static Application.Queries.Professional.GetCertificatesByProfile;
+using static Application.Queries.Professional.GetEducationById;
+using static Application.Queries.Professional.GetEducationsByProfile;
+using static Application.Queries.Professional.GetExperienceById;
+using static Application.Queries.Professional.GetExperiencesByProfile;
+using static Application.Queries.Professional.GetPortfolioLinksByProfile;
+using static Application.Queries.Professional.GetProfessionalProfile;
+using static Application.Queries.Professional.GetProfessionalSkillById;
+using static Application.Queries.Professional.GetProfessionalSkillsByProfile;
+using static Application.Queries.Professional.GetProjectById;
+using static Application.Queries.Professional.GetProjectsByProfile;
 
 namespace Host.Controllers.Professional
 {
@@ -538,6 +546,59 @@ namespace Host.Controllers.Professional
                 return BadRequest(response);
             }
 
+            return Ok(response);
+        }
+
+        [Authorize]
+        [HttpPost("upload-profile-picture")]
+        public async Task<IActionResult> UploadProfilePics([FromForm] UploadProfilePictureRequest request)
+        {
+            var command = new UploadProfilePictureCommand(
+                ClaimsHelper.GetUserId(User),
+                request.File);
+
+            var response = await mediator.Send(command);
+
+            if (!response.Status)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+
+        [HttpPut("logo")]
+
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadCompanyLogo([FromForm] UploadCompanyLogoDto logoDto)
+        {
+            var result = await mediator.Send(
+                new UploadCompanyLogo.UploadCompanyLogoCommand(ClaimsHelper.GetUserId(User), logoDto.File));
+
+            return result.Status ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpPost("update-basic-info")]
+
+        public async Task<IActionResult> UpdateBasicInfo(UpdateUserBasicInfoCommand command)
+        {
+            var response = await mediator.Send(command);
+
+            if (!response.Status)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpPost("delete-resume")]
+
+        public async Task<IActionResult> DeleteResume(DeleteResumeCommand command)
+        {
+            var response = await mediator.Send(command);
+            if (!response.Status) return BadRequest(response);
             return Ok(response);
         }
     }

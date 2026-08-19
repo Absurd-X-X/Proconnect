@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ProConnectDbContext))]
-    partial class ProConnectDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260815192610_UpdateAgain")]
+    partial class UpdateAgain
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -278,7 +281,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b235f2ed-bb4e-4bd2-a03d-0e3c17aaf2e2"),
                             CreatedBy = "c117635d-96e0-409b-9fae-72976ec9c42a",
-                            DateCreated = new DateTime(2026, 8, 17, 16, 29, 25, 148, DateTimeKind.Utc).AddTicks(3219),
+                            DateCreated = new DateTime(2026, 8, 15, 19, 26, 8, 603, DateTimeKind.Utc).AddTicks(1909),
                             DateModified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             Title = "Soulshelf Group Chat"
@@ -320,11 +323,11 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("82f0620f-aa87-4b89-a74b-8547f2ec174a"),
+                            Id = new Guid("1bc84b7e-febe-4ce5-a6c6-e90fcabf5bb7"),
                             ConversationId = new Guid("b235f2ed-bb4e-4bd2-a03d-0e3c17aaf2e2"),
                             CreatedBy = "c117635d-96e0-409b-9fae-72976ec9c42a",
                             IsDeleted = false,
-                            JoinedAt = new DateTime(2026, 8, 17, 16, 29, 25, 149, DateTimeKind.Utc).AddTicks(3348),
+                            JoinedAt = new DateTime(2026, 8, 15, 19, 26, 8, 604, DateTimeKind.Utc).AddTicks(1922),
                             UserId = "c117635d-96e0-409b-9fae-72976ec9c42a"
                         });
                 });
@@ -939,18 +942,9 @@ namespace Infrastructure.Migrations
                     b.Property<int>("ResumeDownloadCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("ResumeFileName")
-                        .HasColumnType("longtext");
-
-                    b.Property<long?>("ResumeFileSizeBytes")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("ResumePublicId")
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
-
-                    b.Property<DateTime?>("ResumeUploadedAt")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("ResumeUrl")
                         .HasMaxLength(500)
@@ -1339,11 +1333,11 @@ namespace Infrastructure.Migrations
                             Id = "c117635d-96e0-409b-9fae-72976ec9c42a",
                             Bio = "I am the administrator of this platform.",
                             CreatedBy = "system",
-                            DateCreated = new DateTime(2026, 8, 17, 16, 29, 25, 67, DateTimeKind.Utc).AddTicks(4945),
+                            DateCreated = new DateTime(2026, 8, 15, 19, 26, 8, 525, DateTimeKind.Utc).AddTicks(4778),
                             DateModified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@gmail.com",
                             FirstName = "Ajibike",
-                            HashedPassword = "AQAAAAIAAYagAAAAEBkOrxwU7w3CXHH54Ilsmm3+/6Dt0/64GHrWSP5SDOFcrrBSM43NJCjG8RLs+1IFSw==",
+                            HashedPassword = "AQAAAAIAAYagAAAAEI1C7QcfRLyQjxaEFtgnBozKN/jF1WAFOhbizSKOqnBUIgNQKoVE5ug86M2Wh+jX/g==",
                             IsActive = true,
                             IsDeleted = false,
                             IsVerified = true,

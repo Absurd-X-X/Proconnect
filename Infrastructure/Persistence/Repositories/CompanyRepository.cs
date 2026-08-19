@@ -24,6 +24,7 @@ namespace Infrastructure.Persistence.Repositories
                 .Include(c => c.RecruiterProfiles.Where(r => !r.IsDeleted))
                     .ThenInclude(r => r.User)
                 .Include(c => c.Jobs.Where(j => j.IsActive))
+                    .ThenInclude(j => j.JobApplications)
                 .FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted);
         }
 

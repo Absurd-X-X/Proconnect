@@ -48,6 +48,11 @@ namespace Application.Commands.Authentication
 
                 return Result<string>.Success(uploadResult.Url, "Profile picture updated successfully");
             }
+
+            public class UploadProfilePictureRequest
+            {
+                public IFormFile File { get; set; } = default!;
+            }
         }
     }
 }

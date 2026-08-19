@@ -32,7 +32,7 @@ namespace Application.Commands.Authentication
 
                 if (!getUser.IsVerified)
                 {
-                    return Result<LoginResponse>.Failure("Please verify your email.");
+                    return Result<LoginResponse>.Failure("Please verify your email");
                 }
 
                 if (!getUser.IsActive)

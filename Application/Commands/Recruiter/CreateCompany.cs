@@ -1,7 +1,6 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Repositories;
 using Domain.Entities;
-using Domain.Enums;
 using MediatR;
 
 namespace Application.Commands.Recruiter

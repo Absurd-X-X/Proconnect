@@ -16,7 +16,6 @@ namespace Application.Commands
 
         public record UpdateCompanyProfileCommand(
             Guid RequestingUserId,
-            Guid CompanyId,
             string Name,
             string Industry,
             string Description,
@@ -47,9 +46,9 @@ namespace Application.Commands
                 var requestingProfile = await recruiterProfileRepository
                     .GetByUserIdAsync(request.RequestingUserId);
 
-                if (requestingProfile is null || requestingProfile.CompanyId != request.CompanyId)
+                if (requestingProfile is null || requestingProfile.CompanyId is null)
                 {
-                    return Result<Guid>.Failure("You are not a member of this company");
+                    return Result<Guid>.Failure("You are not linked to a company");
                 }
 
                 if (!requestingProfile.IsCompanyAdmin)
@@ -57,7 +56,7 @@ namespace Application.Commands
                     return Result<Guid>.Failure("Only a company admin can edit the company profile");
                 }
 
-                var company = await companyRepository.GetByIdAsync(request.CompanyId);
+                var company = await companyRepository.GetByIdAsync(requestingProfile.CompanyId.Value);
 
                 if (company is null)
                 {

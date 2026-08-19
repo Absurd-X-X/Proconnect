@@ -1,10 +1,9 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Repositories;
-using Domain.Entities;
 using Domain.Enums;
 using MediatR;
 
-namespace Application.Queries
+namespace Application.Queries.Professional
 {
     public class GetProfessionalProfile
     {
@@ -23,14 +22,26 @@ namespace Application.Queries
                 var response = new GetProfessionalProfileResponse(
                     profile.Id,
                     profile.UserId,
+                    profile.User.FirstName,
+                    profile.User.LastName,
+                    profile.User.Email,
+                    profile.User.Tel,
+                    profile.User.Location,
+                    profile.User.ProfilePictureUrl,
+                    profile.User.IsVerified,
                     profile.HeadLine,
                     profile.Summary,
                     profile.GitHubUrl,
                     profile.LinkedInUrl,
+                    profile.WebsiteUrl,
                     profile.ResumeUrl,
+                    profile.ResumeFileName,
+                    profile.ResumeFileSizeBytes,
+                    profile.ResumeUploadedAt,
                     profile.ResumeViewCount,
                     profile.ResumeDownloadCount,
                     profile.UserStatus,
+                    profile.AvailabilityStatus,
                     profile.PreferredJobTypes,
                     profile.PreferredLocations,
                     profile.EarliestStartDate,
@@ -75,14 +86,26 @@ namespace Application.Queries
     public record GetProfessionalProfileResponse(
         Guid Id,
         Guid UserId,
+        string FirstName,
+        string LastName,
+        string? Email,
+        string? Phone,
+        string? Location,
+        string? ProfilePicture,
+        bool IsVerified,
         string? HeadLine,
         string? Summary,
         string? GitHubUrl,
         string? LinkedInUrl,
+        string? WebsiteUrl,
         string? ResumeUrl,
+        string? ResumeFileName,
+        long? ResumeFileSizeBytes,
+        DateTime? ResumeUploadedAt,
         int ResumeViewCount,
         int ResumeDownloadCount,
         UserStatus UserStatus,
+        AvailabilityStatus AvailabilityStatus,
         List<EmploymentType> PreferredJobTypes,
         List<string> PreferredLocations,
         DateTime? EarliestStartDate,

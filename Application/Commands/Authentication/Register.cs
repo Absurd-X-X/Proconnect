@@ -81,7 +81,7 @@ namespace Application.Commands.Authentication
                     Role = Roles.User,
                     VerificationToken = token,
                     VerificationTokenExpiry =
-                        DateTime.UtcNow.AddMinutes(5),
+                    DateTime.UtcNow.AddMinutes(5),
                     IsVerified = false,
                     IsActive = true,
                     DateCreated = DateTime.UtcNow,

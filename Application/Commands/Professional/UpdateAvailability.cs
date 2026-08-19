@@ -8,15 +8,15 @@ namespace Application.Commands.Professional
     public class UpdateAvailability
     {
         public record UpdateAvailabilityCommand(
-            Guid UserId,
-            UserStatus UserStatus,
-            List<EmploymentType> PreferredJobTypes,
-            List<string> PreferredLocations,
-            DateTime? EarliestStartDate,
-            bool WillingToRelocate,
-            WorkAuthorizationStatus WorkAuthorization,
-            AvailabilityVisibility AvailabilityVisibility
-            ) : IRequest<Result<string>>;
+        Guid UserId,
+        AvailabilityStatus AvailabilityStatus,
+        List<EmploymentType> PreferredJobTypes,
+        List<string> PreferredLocations,
+        DateTime? EarliestStartDate,
+        bool WillingToRelocate,
+        WorkAuthorizationStatus WorkAuthorization,
+        AvailabilityVisibility AvailabilityVisibility
+        ) : IRequest<Result<string>>;
 
         public class UpdateAvailabilityHandler(
             IProfessionalProfileRepository professionalProfileRepository,
@@ -29,8 +29,6 @@ namespace Application.Commands.Professional
                 if (profile is null)
                     return Result<string>.Failure("Professional profile not found");
 
-                profile.UserStatus = request.UserStatus;
-
                 profile.PreferredJobTypes = request.PreferredJobTypes;
 
                 profile.PreferredLocations = request.PreferredLocations;
@@ -42,6 +40,8 @@ namespace Application.Commands.Professional
                 profile.WorkAuthorization = request.WorkAuthorization;
 
                 profile.AvailabilityVisibility = request.AvailabilityVisibility;
+
+                profile.AvailabilityStatus = request.AvailabilityStatus;
 
                 profile.DateModified = DateTime.UtcNow;
 

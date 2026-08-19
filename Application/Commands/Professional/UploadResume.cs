@@ -42,6 +42,12 @@ namespace Application.Commands.Professional
 
                 profile.ResumePublicId = uploadResult.PublicId;
 
+                profile.ResumeFileName = request.File.FileName;
+
+                profile.ResumeFileSizeBytes = request.File.Length;
+
+                profile.ResumeUploadedAt = DateTime.UtcNow;
+
                 profile.DateModified = DateTime.UtcNow;
 
                 await unitOfWork.SaveAsync();

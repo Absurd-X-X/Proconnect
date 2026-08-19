@@ -377,6 +377,114 @@ namespace Application.Contract.Settings
                 appUrl);
         }
 
+        public static string RecruiterApprovedEmail(
+    string recruiterName,
+    string companyName,
+    string appUrl)
+        {
+            return BaseTemplate(
+
+                "Welcome to the Team 🎉",
+
+                $@"
+
+        <p>
+        Hello <strong>{recruiterName}</strong>,
+        </p>
+
+        <p>
+
+        Your request to join <strong>{companyName}</strong>
+        has been approved.
+
+        </p>
+
+        <p>
+
+        You now have full access to the company's
+        recruitment tools on ProConnect.
+
+        </p>
+
+        ",
+
+                "Go to Dashboard",
+
+                appUrl);
+        }
+
+        public static string RecruiterRejectedEmail(
+            string recruiterName,
+            string companyName,
+            string appUrl)
+        {
+            return BaseTemplate(
+
+                "Update on Your Join Request",
+
+                $@"
+
+        <p>
+        Hello <strong>{recruiterName}</strong>,
+        </p>
+
+        <p>
+
+        Your request to join <strong>{companyName}</strong>
+        was not approved at this time.
+
+        </p>
+
+        <p>
+
+        If you believe this was a mistake,
+        please contact the company admin directly.
+
+        </p>
+
+        ",
+
+                "Return to ProConnect",
+
+                appUrl);
+        }
+
+        public static string RecruiterRemovedEmail(
+            string recruiterName,
+            string companyName,
+            string appUrl)
+        {
+            return BaseTemplate(
+
+                "Company Access Removed",
+
+                $@"
+
+        <p>
+        Hello <strong>{recruiterName}</strong>,
+        </p>
+
+        <p>
+
+        You have been removed from
+        <strong>{companyName}</strong> on ProConnect.
+
+        </p>
+
+        <p>
+
+        If you believe this was a mistake,
+        please contact the company admin.
+
+        </p>
+
+        ",
+
+                "Go to ProConnect",
+
+                appUrl);
+        }
+
         public static string ConnectionAcceptedEmail(
             string userName,
             string acceptedBy,

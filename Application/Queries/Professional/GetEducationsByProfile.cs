@@ -3,7 +3,7 @@ using Application.Common.Repositories;
 using Application.Common.Dtos;
 using MediatR;
 
-namespace Application.Queries
+namespace Application.Queries.Professional
 {
     public class GetEducationsByProfile
     {

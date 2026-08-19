@@ -18,15 +18,25 @@ namespace Domain.Entities
 
         public string? LinkedInUrl { get; set; } = default!;
 
+        public string? WebsiteUrl { get; set; } = default!;
+
         public string? ResumeUrl { get; set; } = default!;
 
         public string? ResumePublicId { get; set; }
+
+        public string? ResumeFileName { get; set; }
+
+        public long? ResumeFileSizeBytes { get; set; }
+
+        public DateTime? ResumeUploadedAt { get; set; }
 
         public int ResumeViewCount { get; set; }
 
         public int ResumeDownloadCount { get; set; }
 
         public UserStatus UserStatus { get; set; }
+
+        public AvailabilityStatus AvailabilityStatus { get; set; }
 
         public List<EmploymentType> PreferredJobTypes { get; set; } = new();
 

@@ -33,6 +33,10 @@ public class ProfessionalProfileConfiguration : IEntityTypeConfiguration<Profess
             .HasConversion<string>()
             .HasMaxLength(100);
 
+        builder.Property(x => x.AvailabilityStatus)
+    .HasConversion<string>()
+    .HasMaxLength(50);
+
         builder.Property(x => x.WorkAuthorization)
             .HasConversion<string>()
             .HasMaxLength(100);
@@ -40,6 +44,9 @@ public class ProfessionalProfileConfiguration : IEntityTypeConfiguration<Profess
         builder.Property(x => x.AvailabilityVisibility)
             .HasConversion<string>()
             .HasMaxLength(100);
+
+        builder.Property(x => x.WebsiteUrl)
+    .HasMaxLength(500);
 
         builder.Property(x => x.PreferredJobTypes)
             .HasConversion(

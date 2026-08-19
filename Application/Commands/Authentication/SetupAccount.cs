@@ -1,6 +1,8 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Repositories;
 using Application.Constant;
+using Application.Contract.Settings;
+using Application.Services.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 using MediatR;
@@ -12,30 +14,33 @@ namespace Application.Commands.Authentication
         public record SetupAccountCommand(
             string Email,
             string AccountType
-        ) : IRequest<Result<string>>;
+        ) : IRequest<Result<LoginResponse>>;
 
 
         public class SetupAccountHandler(
         IUserRepository userRepository,
         IProfessionalProfileRepository professionalProfileRepository,
         IRecruiterProfileRepository recruiterProfileRepository,
+        ITokenServices tokenServices,
         IUnitOfWork unitOfWork)
-    : IRequestHandler<SetupAccountCommand, Result<string>>
+    : IRequestHandler<SetupAccountCommand, Result<LoginResponse>>
         {
-            public async Task<Result<string>> Handle(
+            public async Task<Result<LoginResponse>> Handle(
                 SetupAccountCommand request,
                 CancellationToken cancellationToken)
             {
                 var user = await userRepository.GetByEmailAsync(request.Email);
 
                 if (user is null)
-                    return Result<string>.Failure("User not found");
+                    return Result<LoginResponse>.Failure("User not found");
 
                 if (!user.IsVerified)
-                    return Result<string>.Failure("Please verify your email first");
+                    return Result<LoginResponse>.Failure("Please verify your email first");
 
                 if (user.Role != Roles.User)
-                    return Result<string>.Failure("Account type already selected");
+                    return Result<LoginResponse>.Failure("Account type already selected");
+
+                Guid profileId;
 
                 switch (request.AccountType)
                 {
@@ -44,13 +49,14 @@ namespace Application.Commands.Authentication
 
                         var professionalProfile = new ProfessionalProfile
                         {
-                            Id = Guid.NewGuid(),
                             UserId = user.Id,
                             DateCreated = DateTime.UtcNow,
                             UserStatus = UserStatus.Active,
                             DateModified = DateTime.UtcNow,
-                            CreatedBy = user.Email
+                            CreatedBy = user.Email,
                         };
+
+                        profileId = professionalProfile.Id;
 
                         await professionalProfileRepository.AddAsync(professionalProfile);
                         break;
@@ -60,27 +66,40 @@ namespace Application.Commands.Authentication
 
                         var recruiterProfile = new RecruiterProfile
                         {
-                            Id = Guid.NewGuid(),
                             UserId = user.Id,
                             DateCreated = DateTime.UtcNow,
                             DateModified = DateTime.UtcNow,
                             CreatedBy = user.Email
                         };
 
+                        profileId = recruiterProfile.Id;
+
                         await recruiterProfileRepository.CreateAsync(recruiterProfile);
                         break;
 
                     default:
-                        return Result<string>.Failure("Invalid account type");
+                        return Result<LoginResponse>.Failure("Invalid account type");
                 }
 
                 user.DateModified = DateTime.UtcNow;
 
                 await unitOfWork.SaveAsync();
 
-                return Result<string>.Success(
-                    "Account setup completed successfully",
-                    "completed");
+                var response = new LoginResponse
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    Role = user.Role,
+                    ProfileId = profileId.ToString(),
+                    UserName = user.UserName
+                };
+
+                var token = tokenServices.GenerateToken(response);
+
+
+                return Result<LoginResponse>.Success(
+                    response,
+                    token);
             }
         }
     }

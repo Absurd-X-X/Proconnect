@@ -25,7 +25,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
-
 // ==========================================
 // Framework Services
 // ==========================================
@@ -47,6 +46,12 @@ builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(Login).Assembly);
 });
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 
 
 builder.Services.AddDbContext<ProConnectDbContext>(config =>
@@ -93,6 +98,9 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // User
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped<ISkillRepository, SkillRepository>();
+
 
 // Professional Profile
 

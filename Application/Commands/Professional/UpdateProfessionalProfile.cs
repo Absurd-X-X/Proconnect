@@ -7,12 +7,13 @@ namespace Application.Commands.Professional
     public class UpdateProfessionalProfile
     {
         public record UpdateProfessionalProfileCommand(
-            Guid UserId,
-            string HeadLine,
-            string Summary,
-            string? GitHubUrl,
-            string? LinkedInUrl
-        ) : IRequest<Result<string>>;
+        Guid UserId,
+        string HeadLine,
+        string Summary,
+        string? WebsiteUrl,
+        string? GitHubUrl,
+        string? LinkedInUrl
+    ) : IRequest<Result<string>>;
 
         public class UpdateProfessionalProfileHandler(
             IProfessionalProfileRepository professionalProfileRepository,
@@ -37,6 +38,7 @@ namespace Application.Commands.Professional
 
                 profile.HeadLine = request.HeadLine;
                 profile.Summary = request.Summary;
+                profile.WebsiteUrl = request.WebsiteUrl;
                 profile.GitHubUrl = request.GitHubUrl;
                 profile.LinkedInUrl = request.LinkedInUrl;
                 profile.DateModified = DateTime.UtcNow;

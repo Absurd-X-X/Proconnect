@@ -26,16 +26,16 @@ namespace Infrastructure.Storage.Cloudinary
         }
 
         public async Task<FileUploadResult> UploadAsync(
-            IFormFile file,
-            string folder,
-            CancellationToken cancellationToken = default)
+    IFormFile file,
+    string folder,
+    CancellationToken cancellationToken = default)
         {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("File is empty.");
 
             await using var stream = file.OpenReadStream();
 
-            var uploadParams = new AutoUploadParams
+            var uploadParams = new RawUploadParams
             {
                 File = new FileDescription(file.FileName, stream),
                 Folder = folder

@@ -40,7 +40,7 @@ namespace Infrastructure.Authentication
                 issuer: _settings.Issuer,
                 audience: _settings.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_settings.Expiry),
+                expires: DateTime.UtcNow.AddMinutes(_settings.ExpiryTime),
                 signingCredentials: signingCredentials
             );
 

@@ -1,7 +1,9 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Repositories;
+using Application.Contract.Settings;
 using Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Commands
 {
@@ -9,14 +11,13 @@ namespace Application.Commands
     {
         public record UploadCompanyLogoCommand(
             Guid RequestingUserId,
-            Guid CompanyId,
-            string LogoUrl,
-            string LogoPublicId
+            IFormFile File
         ) : IRequest<Result<string>>;
 
         public class UploadCompanyLogoHandler(
             ICompanyRepository companyRepository,
             IRecruiterProfileRepository recruiterProfileRepository,
+            IFileStorage fileStorage,
             IUnitOfWork unitOfWork,
             IAuditLogRepository auditLogRepository)
             : IRequestHandler<UploadCompanyLogoCommand, Result<string>>
@@ -28,9 +29,9 @@ namespace Application.Commands
                 var requestingProfile = await recruiterProfileRepository
                     .GetByUserIdAsync(request.RequestingUserId);
 
-                if (requestingProfile is null || requestingProfile.CompanyId != request.CompanyId)
+                if (requestingProfile is null || requestingProfile.CompanyId is null)
                 {
-                    return Result<string>.Failure("You are not a member of this company");
+                    return Result<string>.Failure("You are not linked to a company");
                 }
 
                 if (!requestingProfile.IsCompanyAdmin)
@@ -38,15 +39,30 @@ namespace Application.Commands
                     return Result<string>.Failure("Only a company admin can update the company logo");
                 }
 
-                var company = await companyRepository.GetByIdAsync(request.CompanyId);
+                var company = await companyRepository.GetByIdAsync(requestingProfile.CompanyId.Value);
 
                 if (company is null)
                 {
                     return Result<string>.Failure("Company not found");
                 }
 
-                company.LogoUrl = request.LogoUrl;
-                company.LogoPublicId = request.LogoPublicId;
+                if (request.File is null || request.File.Length == 0)
+                {
+                    return Result<string>.Failure("No file was uploaded");
+                }
+
+                if (!string.IsNullOrWhiteSpace(company.LogoPublicId))
+                {
+                    await fileStorage.DeleteAsync(company.LogoPublicId, cancellationToken);
+                }
+
+                var uploadResult = await fileStorage.UploadAsync(
+                    request.File,
+                    "proconnect/company-logos",
+                    cancellationToken);
+
+                company.LogoUrl = uploadResult.Url;
+                company.LogoPublicId = uploadResult.PublicId;
 
                 companyRepository.UpdateAsync(company);
 
@@ -61,8 +77,10 @@ namespace Application.Commands
 
                 await unitOfWork.SaveAsync();
 
-                return Result<string>.Success(company.LogoUrl, "Logo updated successfully");
+                return Result<string>.Success(uploadResult.Url, "Logo updated successfully");
             }
+
+            public record UploadCompanyLogoDto(IFormFile File);
         }
     }
 }

@@ -3,7 +3,7 @@ using Application.Common.Dtos;
 using Domain.Enums;
 using MediatR;
 
-namespace Application.Queries
+namespace Application.Queries.Professional
 {
     public class GetExperienceById
     {
