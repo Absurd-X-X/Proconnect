@@ -26,11 +26,9 @@
 
   <ItemGroup>
     <Folder Include="Controllers\Jobs\" />
-    <Folder Include="Controllers\Network\" />
     <Folder Include="Controllers\Admin\" />
     <Folder Include="Controllers\Dashboard\" />
     <Folder Include="Controllers\Search\" />
-    <Folder Include="Controllers\Social\" />
   </ItemGroup>
 
 </Project>

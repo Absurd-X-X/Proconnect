@@ -4,7 +4,11 @@
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        public string Title { get; set; } = default!;
+        public bool IsGroup { get; set; }
+
+        public string? Title { get; set; }
+
+        public string? GroupPhotoUrl { get; set; }
 
         public bool IsDeleted { get; set; }
 

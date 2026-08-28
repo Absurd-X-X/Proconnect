@@ -8,6 +8,14 @@
 
         public User User { get; set; } = default!;
 
+        public Guid? PostId { get; set; }
+
+        public Post? Post { get; set; }
+
+        public Guid? MessageId { get; set; }
+
+        public Message? Message { get; set; }
+
         public string FileName { get; set; } = default!;
 
         public string FileUrl { get; set; } = default!;
@@ -15,6 +23,8 @@
         public string FileType { get; set; } = default!;
 
         public int FileSize { get; set; }
+
+        public int DisplayOrder { get; set; }
 
         public DateTime UploadedOn { get; set; } = DateTime.UtcNow;
 

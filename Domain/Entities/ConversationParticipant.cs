@@ -14,6 +14,14 @@
 
         public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
 
+        public DateTime? LastReadAt { get; set; }
+
+        public bool IsPinned { get; set; }
+
+        public bool IsMuted { get; set; }
+
+        public bool IsHidden { get; set; }
+
         public bool IsDeleted { get; set; }
 
         public string CreatedBy { get; set; } = default!;

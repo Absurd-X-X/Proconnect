@@ -12,9 +12,11 @@ namespace Domain.Entities
 
         public string Content { get; set; } = default!;
 
-        public string PostContenetUrl { get; set; } = default!;
-
         public Visibility Visibility { get; set; } = Visibility.Public;
+
+        public Guid? OriginalPostId { get; set; }
+
+        public Post? OriginalPost { get; set; }
 
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
@@ -29,5 +31,7 @@ namespace Domain.Entities
         public ICollection<Report> Reports { get; set; } = new HashSet<Report>();
 
         public ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
+
+        public ICollection<FileUpload> Attachments { get; set; } = new HashSet<FileUpload>();
     }
 }

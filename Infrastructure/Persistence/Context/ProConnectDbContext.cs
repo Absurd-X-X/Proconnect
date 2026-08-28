@@ -60,6 +60,8 @@ namespace Infrastructure.Persistence.Context
 
         public DbSet<User> Users { get; set; }
 
+        public DbSet<UserFollow> UserFollows { get; set; }
+
         public DbSet<UserConnection> UserConnections { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

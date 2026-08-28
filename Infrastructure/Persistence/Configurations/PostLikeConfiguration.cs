@@ -21,6 +21,9 @@ public class PostLikeConfiguration : IEntityTypeConfiguration<PostLike>
             x.UserId
         }).IsUnique();
 
+        builder.Property(x => x.ReactionType)
+            .HasConversion<int>();
+
         builder.HasOne(x => x.Post)
             .WithMany(x => x.PostLikes)
             .HasForeignKey(x => x.PostId)

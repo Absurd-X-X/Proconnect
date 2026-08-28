@@ -12,14 +12,8 @@ public class MessageConfiguration : IEntityTypeConfiguration<Message>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Content)
-            .IsRequired();
-
-        builder.Property(x => x.IsRead)
-            .HasDefaultValue(false);
-
         builder.Property(x => x.DateCreated)
-    .IsRequired();
+            .IsRequired();
 
         builder.HasOne(x => x.Conversation)
             .WithMany(x => x.Messages)

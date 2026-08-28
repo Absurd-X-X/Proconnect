@@ -15,8 +15,6 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.Property(x => x.Content)
             .IsRequired();
 
-        builder.Property(x => x.PostContenetUrl)
-            .HasMaxLength(500);
 
         builder.Property(x => x.Visibility)
             .HasConversion<int>();

@@ -64,6 +64,10 @@
 
         public ICollection<Notification> Notifications { get; set; } = new HashSet<Notification>();
 
+        public ICollection<UserFollow> Following { get; set; } = new HashSet<UserFollow>();
+
+        public ICollection<UserFollow> Followers { get; set; } = new HashSet<UserFollow>();
+
         public ICollection<Post> Posts { get; set; } = new HashSet<Post>();
 
         public ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();

@@ -1,4 +1,6 @@
-﻿namespace Domain.Entities
+﻿using Domain.Enums;
+
+namespace Domain.Entities
 {
     public class PostLike
     {
@@ -11,6 +13,8 @@
         public Guid UserId { get; set; }
 
         public User User { get; set; } = default!;
+
+        public ReactionType ReactionType { get; set; } = ReactionType.Like;
 
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 

@@ -21,6 +21,8 @@ public class ConversationParticipantConfiguration : IEntityTypeConfiguration<Con
             x.UserId
         }).IsUnique();
 
+
+
         builder.HasOne(x => x.Conversation)
             .WithMany(x => x.Participants)
             .HasForeignKey(x => x.ConversationId)

@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
-using ProConnect.Infrastructure.Repositories;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
@@ -120,6 +119,25 @@ builder.Services.AddScoped<IExperienceRepository, ExperienceRepository>();
 
 // Education
 builder.Services.AddScoped<IEducationRepository, EducationRepository>();
+
+builder.Services.AddScoped<IUserConnectionRepository, UserConnectionRepository>();
+
+builder.Services.AddScoped<IUserFollowRepository, UserFollowRepository>();
+
+builder.Services.AddScoped<IPostLikeRepository, PostLikeRepository>();
+
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+
+builder.Services.AddScoped<IFileUploadRepository, FileUploadRepository>();
+
+builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
+
+builder.Services.AddScoped<IConversationParticipantRepository, ConversationParticipantRepository>();
+
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+
 
 // Skill
 //builder.Services.AddScoped<ISkillRepository, SkillRepository>();

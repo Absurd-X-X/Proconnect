@@ -12,9 +12,7 @@
 
         public User User { get; set; } = default!;
 
-        public string Content { get; set; } = default!;
-
-        public bool IsRead { get; set; } = false;
+        public string? Content { get; set; }
 
         public bool IsDeleted { get; set; }
 

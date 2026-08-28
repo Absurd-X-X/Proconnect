@@ -10,6 +10,10 @@ namespace Domain.Entities
 
         public ProfessionalProfile ProfessionalProfile { get; set; } = default!;
 
+        public Guid? CompanyId { get; set; }
+
+        public Company? Company { get; set; }
+
         public string CompanyName { get; set; } = default!;
 
         public string JobTitle { get; set; } = default!;

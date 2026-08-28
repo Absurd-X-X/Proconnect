@@ -31,11 +31,16 @@ public class ExperienceConfiguration : IEntityTypeConfiguration<Experience>
             .HasDefaultValue(false);
 
         builder.Property(x => x.DateCreated)
-    .IsRequired();
+            .IsRequired();
 
         builder.HasOne(x => x.ProfessionalProfile)
             .WithMany(x => x.Experiences)
             .HasForeignKey(x => x.ProfessionalProfileId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(x => x.Company)
+            .WithMany()
+            .HasForeignKey(x => x.CompanyId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

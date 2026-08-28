@@ -25,6 +25,11 @@ public class FileUploadConfiguration : IEntityTypeConfiguration<FileUpload>
         builder.Property(x => x.UploadedOn)
     .IsRequired();
 
+        builder.HasOne(v => v.Post)
+            .WithMany(v => v.Attachments)
+            .HasForeignKey(v => v.PostId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         builder.HasOne(x => x.User)
             .WithMany(x => x.Files)
             .HasForeignKey(x => x.UserId)

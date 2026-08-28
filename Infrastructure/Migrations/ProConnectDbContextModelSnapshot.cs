@@ -262,11 +262,16 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("DateModified")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("GroupPhotoUrl")
+                        .HasColumnType("longtext");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<bool>("IsGroup")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
@@ -278,9 +283,10 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b235f2ed-bb4e-4bd2-a03d-0e3c17aaf2e2"),
                             CreatedBy = "c117635d-96e0-409b-9fae-72976ec9c42a",
-                            DateCreated = new DateTime(2026, 8, 17, 16, 29, 25, 148, DateTimeKind.Utc).AddTicks(3219),
+                            DateCreated = new DateTime(2026, 8, 27, 7, 10, 15, 524, DateTimeKind.Utc).AddTicks(5275),
                             DateModified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
+                            IsGroup = false,
                             Title = "Soulshelf Group Chat"
                         });
                 });
@@ -301,7 +307,19 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<bool>("IsHidden")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsMuted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsPinned")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("LastReadAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("UserId")
@@ -320,11 +338,14 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("82f0620f-aa87-4b89-a74b-8547f2ec174a"),
+                            Id = new Guid("d11d07d1-d188-4555-af1f-35c75efd9516"),
                             ConversationId = new Guid("b235f2ed-bb4e-4bd2-a03d-0e3c17aaf2e2"),
                             CreatedBy = "c117635d-96e0-409b-9fae-72976ec9c42a",
                             IsDeleted = false,
-                            JoinedAt = new DateTime(2026, 8, 17, 16, 29, 25, 149, DateTimeKind.Utc).AddTicks(3348),
+                            IsHidden = false,
+                            IsMuted = false,
+                            IsPinned = false,
+                            JoinedAt = new DateTime(2026, 8, 27, 7, 10, 15, 525, DateTimeKind.Utc).AddTicks(5665),
                             UserId = "c117635d-96e0-409b-9fae-72976ec9c42a"
                         });
                 });
@@ -393,6 +414,9 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid?>("CompanyId")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("CompanyName")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -443,6 +467,8 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyId");
+
                     b.HasIndex("ProfessionalProfileId");
 
                     b.ToTable("Experience", (string)null);
@@ -457,6 +483,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
 
                     b.Property<string>("FileName")
                         .IsRequired()
@@ -479,6 +508,12 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<Guid?>("MessageId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("PostId")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTime>("UploadedOn")
                         .HasColumnType("datetime(6)");
 
@@ -487,6 +522,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MessageId");
+
+                    b.HasIndex("PostId");
 
                     b.HasIndex("UserId");
 
@@ -669,7 +708,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Content")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<Guid>("ConversationId")
@@ -684,11 +722,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("IsRead")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(false);
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -832,10 +865,8 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("PostContenetUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
+                    b.Property<Guid?>("OriginalPostId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -845,6 +876,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OriginalPostId");
 
                     b.HasIndex("UserId");
 
@@ -869,6 +902,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<Guid>("PostId")
                         .HasColumnType("char(36)");
+
+                    b.Property<int>("ReactionType")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -1339,11 +1375,11 @@ namespace Infrastructure.Migrations
                             Id = "c117635d-96e0-409b-9fae-72976ec9c42a",
                             Bio = "I am the administrator of this platform.",
                             CreatedBy = "system",
-                            DateCreated = new DateTime(2026, 8, 17, 16, 29, 25, 67, DateTimeKind.Utc).AddTicks(4945),
+                            DateCreated = new DateTime(2026, 8, 27, 7, 10, 15, 437, DateTimeKind.Utc).AddTicks(641),
                             DateModified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@gmail.com",
                             FirstName = "Ajibike",
-                            HashedPassword = "AQAAAAIAAYagAAAAEBkOrxwU7w3CXHH54Ilsmm3+/6Dt0/64GHrWSP5SDOFcrrBSM43NJCjG8RLs+1IFSw==",
+                            HashedPassword = "AQAAAAIAAYagAAAAEGK4OZb3ScfdKCGJCje9esRPNXE3WJppQAqcegUmTw5Gkwdj5H/l0w1FUaFWPu+85g==",
                             IsActive = true,
                             IsDeleted = false,
                             IsVerified = true,
@@ -1392,6 +1428,43 @@ namespace Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("UserConnection", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.UserFollow", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("FollowerId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("FollowingId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FollowingId");
+
+                    b.HasIndex("FollowerId", "FollowingId")
+                        .IsUnique();
+
+                    b.ToTable("UserFollow", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.AuditLog", b =>
@@ -1467,22 +1540,42 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Experience", b =>
                 {
+                    b.HasOne("Domain.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Domain.Entities.ProfessionalProfile", "ProfessionalProfile")
                         .WithMany("Experiences")
                         .HasForeignKey("ProfessionalProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Company");
+
                     b.Navigation("ProfessionalProfile");
                 });
 
             modelBuilder.Entity("Domain.Entities.FileUpload", b =>
                 {
+                    b.HasOne("Domain.Entities.Message", "Message")
+                        .WithMany()
+                        .HasForeignKey("MessageId");
+
+                    b.HasOne("Domain.Entities.Post", "Post")
+                        .WithMany("Attachments")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("Files")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Message");
+
+                    b.Navigation("Post");
 
                     b.Navigation("User");
                 });
@@ -1576,11 +1669,17 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Post", b =>
                 {
+                    b.HasOne("Domain.Entities.Post", "OriginalPost")
+                        .WithMany()
+                        .HasForeignKey("OriginalPostId");
+
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("OriginalPost");
 
                     b.Navigation("User");
                 });
@@ -1728,6 +1827,25 @@ namespace Infrastructure.Migrations
                     b.Navigation("Sender");
                 });
 
+            modelBuilder.Entity("Domain.Entities.UserFollow", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "Follower")
+                        .WithMany("Following")
+                        .HasForeignKey("FollowerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.User", "Following")
+                        .WithMany("Followers")
+                        .HasForeignKey("FollowingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Follower");
+
+                    b.Navigation("Following");
+                });
+
             modelBuilder.Entity("Domain.Entities.Company", b =>
                 {
                     b.Navigation("Jobs");
@@ -1756,6 +1874,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Post", b =>
                 {
+                    b.Navigation("Attachments");
+
                     b.Navigation("Comments");
 
                     b.Navigation("PostLikes");
@@ -1799,6 +1919,10 @@ namespace Infrastructure.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Files");
+
+                    b.Navigation("Followers");
+
+                    b.Navigation("Following");
 
                     b.Navigation("Notifications");
 
