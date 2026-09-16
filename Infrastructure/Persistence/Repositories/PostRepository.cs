@@ -99,6 +99,106 @@ namespace Infrastructure.Persistence.Repositories
             context.Posts.Update(post);
         }
 
+        public async Task<List<IPostRepository.DateCountDto>> GetPostCountTrendAsync(
+            Guid userId, DateTime start, DateTime end)
+        {
+            return await context.Posts
+                .AsNoTracking()
+                .Where(p => p.UserId == userId && !p.IsDeleted
+                    && p.DateCreated >= start && p.DateCreated <= end)
+                .GroupBy(p => p.DateCreated.Date)
+                .Select(g => new IPostRepository.DateCountDto { Date = g.Key, Count = g.Count() })
+                .OrderBy(x => x.Date)
+                .ToListAsync();
+        }
+
+        public async Task<int> GetReactionCountAsync(Guid userId, DateTime start, DateTime end)
+        {
+            return await context.PostLikes
+                .AsNoTracking()
+                .Where(pl => pl.Post.UserId == userId && !pl.IsDeleted
+                    && pl.DateCreated >= start && pl.DateCreated <= end)
+                .CountAsync();
+        }
+
+        public async Task<int> GetCommentCountForUserPostsAsync(Guid userId, DateTime start, DateTime end)
+        {
+            return await context.Comments
+                .AsNoTracking()
+                .Where(c => c.Post.UserId == userId
+                    && c.DateCreated >= start && c.DateCreated <= end)
+                .CountAsync();
+        }
+
+        public async Task<int> GetShareCountForUserPostsAsync(Guid userId, DateTime start, DateTime end)
+        {
+            return await context.Posts
+                .AsNoTracking()
+                .Where(p => p.OriginalPost != null && p.OriginalPost.UserId == userId && !p.IsDeleted
+                    && p.DateCreated >= start && p.DateCreated <= end)
+                .CountAsync();
+        }
+
+        public async Task<List<Guid>> GetPostIdsByUserAsync(Guid userId)
+        {
+            return await context.Posts
+                .AsNoTracking()
+                .Where(p => p.UserId == userId && !p.IsDeleted)
+                .Select(p => p.Id)
+                .ToListAsync();
+        }
+
+        public async Task<Dictionary<Guid, string>> GetContentExcerptsByIdsAsync(List<Guid> postIds)
+        {
+            if (postIds.Count == 0) return new Dictionary<Guid, string>();
+
+            return await context.Posts
+                .AsNoTracking()
+                .Where(p => postIds.Contains(p.Id))
+                .Select(p => new { p.Id, p.Content })
+                .ToDictionaryAsync(x => x.Id, x => x.Content);
+        }
+
+        public async Task<List<IPostRepository.TopPostDto>> GetTopPostsByEngagementAsync(
+            Guid userId, DateTime start, DateTime end, int take)
+        {
+            var posts = await context.Posts
+                .AsNoTracking()
+                .Where(p => p.UserId == userId && !p.IsDeleted
+                    && p.DateCreated >= start && p.DateCreated <= end)
+                .Select(p => new
+                {
+                    p.Id,
+                    p.Content,
+                    p.DateCreated,
+                    ReactionCount = p.PostLikes.Count(pl => !pl.IsDeleted),
+                    CommentCount = p.Comments.Count()
+                })
+                .ToListAsync();
+
+            var postIds = posts.Select(p => p.Id).ToList();
+            var shareCounts = await context.Posts
+                .AsNoTracking()
+                .Where(p => p.OriginalPostId != null && postIds.Contains(p.OriginalPostId.Value) && !p.IsDeleted)
+                .GroupBy(p => p.OriginalPostId!.Value)
+                .Select(g => new { PostId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.PostId, x => x.Count);
+
+            return posts
+                .Select(p => new IPostRepository.TopPostDto
+                {
+                    PostId = p.Id,
+                    Content = p.Content,
+                    DateCreated = p.DateCreated,
+                    ReactionCount = p.ReactionCount,
+                    CommentCount = p.CommentCount,
+                    ShareCount = shareCounts.TryGetValue(p.Id, out var sc) ? sc : 0
+                })
+                .OrderByDescending(p => p.ReactionCount + p.CommentCount + p.ShareCount)
+                .Take(take)
+                .ToList();
+        }
+
         private static async Task<PageResponse<Post>> PaginateAsync(
             IQueryable<Post> query,
             PageRequest request,
@@ -131,6 +231,17 @@ namespace Infrastructure.Persistence.Repositories
                 PageNumber = request.PageNumber,
                 PageSize = request.PageSize
             };
+        }
+
+        public async Task<Dictionary<ReactionType, int>> GetReactionBreakdownAsync(Guid userId, DateTime start, DateTime end)
+        {
+            return await context.PostLikes
+                .AsNoTracking()
+                .Where(pl => pl.Post.UserId == userId && !pl.IsDeleted
+                    && pl.DateCreated >= start && pl.DateCreated <= end)
+                .GroupBy(pl => pl.ReactionType)
+                .Select(g => new { Type = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.Type, x => x.Count);
         }
     }
 }

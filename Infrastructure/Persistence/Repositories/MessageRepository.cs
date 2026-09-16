@@ -26,8 +26,6 @@ namespace Infrastructure.Persistence.Repositories
             PageRequest request,
             bool usePaging)
         {
-            // Newest first — matches "load older messages on scroll-up" pagination;
-            // the frontend reverses the page's items for chronological display.
             var query = context.Messages
                 .AsNoTracking()
                 .Include(m => m.User)

@@ -19,6 +19,39 @@ namespace Infrastructure.Migrations
                 .HasAnnotation("ProductVersion", "10.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("Domain.Entities.AnalyticsEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ActorUserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("EventType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReferrerSource")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("SubjectType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActorUserId", "DateCreated");
+
+                    b.HasIndex("SubjectType", "SubjectId", "DateCreated");
+
+                    b.ToTable("AnalyticsEvent", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.AuditLog", b =>
                 {
                     b.Property<Guid>("Id")
@@ -246,6 +279,80 @@ namespace Infrastructure.Migrations
                     b.ToTable("Companies", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.CompanyReview", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("CompensationRating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("CultureRating")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("HelpfulCount")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsCurrentEmployee")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("JobSecurityRating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ManagementRating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OverallRating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReviewerId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("WorkLifeBalanceRating")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("YearsAtCompany")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("ReviewerId");
+
+                    b.ToTable("CompanyReviews");
+                });
+
             modelBuilder.Entity("Domain.Entities.Conversation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -283,7 +390,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b235f2ed-bb4e-4bd2-a03d-0e3c17aaf2e2"),
                             CreatedBy = "c117635d-96e0-409b-9fae-72976ec9c42a",
-                            DateCreated = new DateTime(2026, 8, 27, 7, 10, 15, 524, DateTimeKind.Utc).AddTicks(5275),
+                            DateCreated = new DateTime(2026, 9, 13, 11, 58, 54, 575, DateTimeKind.Utc).AddTicks(2954),
                             DateModified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             IsGroup = false,
@@ -338,14 +445,14 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d11d07d1-d188-4555-af1f-35c75efd9516"),
+                            Id = new Guid("695078e2-cf76-47ee-b37f-095659a41dbe"),
                             ConversationId = new Guid("b235f2ed-bb4e-4bd2-a03d-0e3c17aaf2e2"),
                             CreatedBy = "c117635d-96e0-409b-9fae-72976ec9c42a",
                             IsDeleted = false,
                             IsHidden = false,
                             IsMuted = false,
                             IsPinned = false,
-                            JoinedAt = new DateTime(2026, 8, 27, 7, 10, 15, 525, DateTimeKind.Utc).AddTicks(5665),
+                            JoinedAt = new DateTime(2026, 9, 13, 11, 58, 54, 576, DateTimeKind.Utc).AddTicks(3017),
                             UserId = "c117635d-96e0-409b-9fae-72976ec9c42a"
                         });
                 });
@@ -406,6 +513,224 @@ namespace Infrastructure.Migrations
                     b.HasIndex("ProfessionalProfileId");
 
                     b.ToTable("Education", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Event", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<int?>("AttendeeLimit")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CancellationReason")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("CancelledAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Category")
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CoverImagePublicId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CoverImageUrl")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("EndDateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("EventType")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("LocationType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OnlineMeetingLink")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("RecruiterProfileId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("RegistrationType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Visibility")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("RecruiterProfileId");
+
+                    b.ToTable("Events");
+                });
+
+            modelBuilder.Entity("Domain.Entities.EventAgendaItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("EventAgendaItems");
+                });
+
+            modelBuilder.Entity("Domain.Entities.EventRegistration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("CancelledAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CompanyOrganization")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("GoalsForAttending")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("JobTitle")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("ProfessionalProfileId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("RegisteredAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ResumePublicId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ResumeUrl")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("ProfessionalProfileId");
+
+                    b.ToTable("EventRegistrations");
+                });
+
+            modelBuilder.Entity("Domain.Entities.EventSpeaker", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Company")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("LinkedInUrl")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("EventSpeakers");
                 });
 
             modelBuilder.Entity("Domain.Entities.Experience", b =>
@@ -598,6 +923,12 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<DateTime?>("ScheduledPublishAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -628,6 +959,24 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("AdditionalAnswers")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ApplicantCurrentJobTitle")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ApplicantLinkedInUrl")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ApplicantLocation")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ApplicantPhone")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("ApplicantYearsOfExperience")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("AppliedAt")
                         .HasColumnType("datetime(6)");
 
@@ -639,11 +988,23 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("InterviewLocationOrLink")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("InterviewScheduledAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("InterviewType")
+                        .HasColumnType("longtext");
+
                     b.Property<Guid>("JobId")
                         .HasColumnType("char(36)");
 
                     b.Property<int>("JobStatus")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("LastActionedByRecruiterProfileId")
+                        .HasColumnType("char(36)");
 
                     b.Property<Guid>("ProfessionalProfileId")
                         .HasColumnType("char(36)");
@@ -658,7 +1019,14 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("WorkAuthorization")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("LastActionedByRecruiterProfileId");
 
                     b.HasIndex("ProfessionalProfileId");
 
@@ -699,6 +1067,38 @@ namespace Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("JobCategory", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.JobSkill", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<Guid>("JobId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("SkillId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SkillId");
+
+                    b.HasIndex("JobId", "SkillId")
+                        .IsUnique();
+
+                    b.ToTable("JobSkill", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Message", b =>
@@ -742,27 +1142,52 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("ActionUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("ActorAvatarUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("ActorName")
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("ActorUserId")
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(450)
+                        .HasColumnType("varchar(450)");
 
                     b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DateRead")
                         .HasColumnType("datetime(6)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<bool>("IsRead")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(false);
-
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Status")
+                    b.Property<Guid?>("SourceEntityId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int?>("SourceEntityType")
                         .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -778,7 +1203,9 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ActorUserId");
+
+                    b.HasIndex("UserId", "IsDeleted", "Status", "DateCreated");
 
                     b.ToTable("Notification", (string)null);
                 });
@@ -1203,6 +1630,34 @@ namespace Infrastructure.Migrations
                     b.ToTable("Report", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.SavedEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ProfessionalProfileId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("ProfessionalProfileId");
+
+                    b.ToTable("SavedEvents");
+                });
+
             modelBuilder.Entity("Domain.Entities.SavedJob", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1233,6 +1688,64 @@ namespace Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("SavedJob", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.SavedJobSearch", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("EmailNotificationsEnabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("EmploymentType")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("ExperienceLevel")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<Guid?>("JobCategoryId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Keyword")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("LastNotifiedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("longtext");
+
+                    b.Property<decimal?>("MinSalary")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("ProfessionalProfileId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("WorkPlaceType")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobCategoryId");
+
+                    b.HasIndex("ProfessionalProfileId");
+
+                    b.ToTable("SavedJobSearch", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Skill", b =>
@@ -1375,11 +1888,11 @@ namespace Infrastructure.Migrations
                             Id = "c117635d-96e0-409b-9fae-72976ec9c42a",
                             Bio = "I am the administrator of this platform.",
                             CreatedBy = "system",
-                            DateCreated = new DateTime(2026, 8, 27, 7, 10, 15, 437, DateTimeKind.Utc).AddTicks(641),
+                            DateCreated = new DateTime(2026, 9, 13, 11, 58, 54, 489, DateTimeKind.Utc).AddTicks(7113),
                             DateModified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@gmail.com",
                             FirstName = "Ajibike",
-                            HashedPassword = "AQAAAAIAAYagAAAAEGK4OZb3ScfdKCGJCje9esRPNXE3WJppQAqcegUmTw5Gkwdj5H/l0w1FUaFWPu+85g==",
+                            HashedPassword = "AQAAAAIAAYagAAAAEJVlEBdRzNH/xbobmSxIaqNLUFysHlcoxrjmERaOxrwgFMmZvBqZFsY7UlazkLn1Gw==",
                             IsActive = true,
                             IsDeleted = false,
                             IsVerified = true,
@@ -1467,6 +1980,16 @@ namespace Infrastructure.Migrations
                     b.ToTable("UserFollow", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.AnalyticsEvent", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "ActorUser")
+                        .WithMany("AnalyticsEvents")
+                        .HasForeignKey("ActorUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("ActorUser");
+                });
+
             modelBuilder.Entity("Domain.Entities.AuditLog", b =>
                 {
                     b.HasOne("Domain.Entities.User", "User")
@@ -1508,6 +2031,25 @@ namespace Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Entities.CompanyReview", b =>
+                {
+                    b.HasOne("Domain.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.User", "Reviewer")
+                        .WithMany()
+                        .HasForeignKey("ReviewerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Reviewer");
+                });
+
             modelBuilder.Entity("Domain.Entities.ConversationParticipant", b =>
                 {
                     b.HasOne("Domain.Entities.Conversation", "Conversation")
@@ -1536,6 +2078,66 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("ProfessionalProfile");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Event", b =>
+                {
+                    b.HasOne("Domain.Entities.Company", "Company")
+                        .WithMany("Events")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.RecruiterProfile", "RecruiterProfile")
+                        .WithMany("Events")
+                        .HasForeignKey("RecruiterProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("RecruiterProfile");
+                });
+
+            modelBuilder.Entity("Domain.Entities.EventAgendaItem", b =>
+                {
+                    b.HasOne("Domain.Entities.Event", "Event")
+                        .WithMany("AgendaItems")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+                });
+
+            modelBuilder.Entity("Domain.Entities.EventRegistration", b =>
+                {
+                    b.HasOne("Domain.Entities.Event", "Event")
+                        .WithMany("Registrations")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.ProfessionalProfile", "ProfessionalProfile")
+                        .WithMany("EventRegistrations")
+                        .HasForeignKey("ProfessionalProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("ProfessionalProfile");
+                });
+
+            modelBuilder.Entity("Domain.Entities.EventSpeaker", b =>
+                {
+                    b.HasOne("Domain.Entities.Event", "Event")
+                        .WithMany("Speakers")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("Domain.Entities.Experience", b =>
@@ -1615,6 +2217,10 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.RecruiterProfile", "LastActionedByRecruiterProfile")
+                        .WithMany()
+                        .HasForeignKey("LastActionedByRecruiterProfileId");
+
                     b.HasOne("Domain.Entities.ProfessionalProfile", "ProfessionalProfile")
                         .WithMany("JobApplications")
                         .HasForeignKey("ProfessionalProfileId")
@@ -1623,7 +2229,28 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("Job");
 
+                    b.Navigation("LastActionedByRecruiterProfile");
+
                     b.Navigation("ProfessionalProfile");
+                });
+
+            modelBuilder.Entity("Domain.Entities.JobSkill", b =>
+                {
+                    b.HasOne("Domain.Entities.Job", "Job")
+                        .WithMany("JobSkills")
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Skill", "Skill")
+                        .WithMany("JobSkills")
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Job");
+
+                    b.Navigation("Skill");
                 });
 
             modelBuilder.Entity("Domain.Entities.Message", b =>
@@ -1647,11 +2274,18 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Notification", b =>
                 {
+                    b.HasOne("Domain.Entities.User", "ActorUser")
+                        .WithMany()
+                        .HasForeignKey("ActorUserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ActorUser");
 
                     b.Navigation("User");
                 });
@@ -1789,6 +2423,25 @@ namespace Infrastructure.Migrations
                     b.Navigation("Reporter");
                 });
 
+            modelBuilder.Entity("Domain.Entities.SavedEvent", b =>
+                {
+                    b.HasOne("Domain.Entities.Event", "Event")
+                        .WithMany("SavedByProfessionals")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.ProfessionalProfile", "ProfessionalProfile")
+                        .WithMany("SavedEvents")
+                        .HasForeignKey("ProfessionalProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("ProfessionalProfile");
+                });
+
             modelBuilder.Entity("Domain.Entities.SavedJob", b =>
                 {
                     b.HasOne("Domain.Entities.Job", "Job")
@@ -1804,6 +2457,24 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Job");
+
+                    b.Navigation("ProfessionalProfile");
+                });
+
+            modelBuilder.Entity("Domain.Entities.SavedJobSearch", b =>
+                {
+                    b.HasOne("Domain.Entities.JobCategory", "JobCategory")
+                        .WithMany()
+                        .HasForeignKey("JobCategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Domain.Entities.ProfessionalProfile", "ProfessionalProfile")
+                        .WithMany("SavedJobSearches")
+                        .HasForeignKey("ProfessionalProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobCategory");
 
                     b.Navigation("ProfessionalProfile");
                 });
@@ -1848,6 +2519,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Company", b =>
                 {
+                    b.Navigation("Events");
+
                     b.Navigation("Jobs");
 
                     b.Navigation("RecruiterProfiles");
@@ -1860,9 +2533,22 @@ namespace Infrastructure.Migrations
                     b.Navigation("Participants");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Event", b =>
+                {
+                    b.Navigation("AgendaItems");
+
+                    b.Navigation("Registrations");
+
+                    b.Navigation("SavedByProfessionals");
+
+                    b.Navigation("Speakers");
+                });
+
             modelBuilder.Entity("Domain.Entities.Job", b =>
                 {
                     b.Navigation("JobApplications");
+
+                    b.Navigation("JobSkills");
 
                     b.Navigation("SavedJobs");
                 });
@@ -1889,6 +2575,8 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("Educations");
 
+                    b.Navigation("EventRegistrations");
+
                     b.Navigation("Experiences");
 
                     b.Navigation("JobApplications");
@@ -1899,21 +2587,31 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("Projects");
 
+                    b.Navigation("SavedEvents");
+
+                    b.Navigation("SavedJobSearches");
+
                     b.Navigation("SavedJobs");
                 });
 
             modelBuilder.Entity("Domain.Entities.RecruiterProfile", b =>
                 {
+                    b.Navigation("Events");
+
                     b.Navigation("Jobs");
                 });
 
             modelBuilder.Entity("Domain.Entities.Skill", b =>
                 {
+                    b.Navigation("JobSkills");
+
                     b.Navigation("ProfessionalSkills");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
+                    b.Navigation("AnalyticsEvents");
+
                     b.Navigation("AuditLogs");
 
                     b.Navigation("Comments");

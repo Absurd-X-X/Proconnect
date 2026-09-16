@@ -2,11 +2,13 @@
 {
     public enum JobStatus
     {
-        Draft = 1,
-        Open = 2,
-        Closed = 3,
-        Expired = 4,
-        Cancelled = 5,
-        Hired = 6,
+        New = 0,
+        Screening = 1,
+        Shortlisted = 2,
+        Interview = 3,
+        Offered = 4,
+        Hired = 5,
+        Rejected = 6,
+        Withdrawn = 7
     }
 }

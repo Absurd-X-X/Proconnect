@@ -14,6 +14,8 @@
 
         public string CreatedBy { get; set; } = default!;
 
+        public ICollection<JobSkill> JobSkills { get; set; } = new HashSet<JobSkill>();
+
         public ICollection<ProfessionalSkill> ProfessionalSkills { get; set; } = new HashSet<ProfessionalSkill>();
     }
 }

@@ -35,6 +35,7 @@ namespace Application.Queries.Messaging
 
                     string? displayTitle = conversation.Title;
                     string? displayPhotoUrl = conversation.GroupPhotoUrl;
+                    Guid? otherUserId = null;
 
                     if (!conversation.IsGroup)
                     {
@@ -43,6 +44,7 @@ namespace Application.Queries.Messaging
                             ? $"{otherParticipant.User.FirstName} {otherParticipant.User.LastName}"
                             : "Conversation";
                         displayPhotoUrl = otherParticipant?.User.ProfilePictureUrl;
+                        otherUserId = otherParticipant?.UserId;
                     }
 
                     items.Add(new ConversationListItemResponse(
@@ -50,10 +52,13 @@ namespace Application.Queries.Messaging
                         conversation.IsGroup,
                         displayTitle,
                         displayPhotoUrl,
+                        otherUserId,
                         lastMessage?.Content,
                         lastMessage?.User.FirstName,
                         lastMessage?.DateCreated ?? conversation.DateCreated,
-                        unreadCount));
+                        unreadCount,
+                        myParticipant?.IsPinned ?? false,
+                        myParticipant?.IsMuted ?? false));
                 }
 
                 var response = new PageResponse<ConversationListItemResponse>
@@ -74,8 +79,11 @@ namespace Application.Queries.Messaging
         bool IsGroup,
         string? Title,
         string? PhotoUrl,
+        Guid? OtherUserId,
         string? LastMessagePreview,
         string? LastMessageSenderFirstName,
         DateTime LastActivityAt,
-        int UnreadCount);
+        int UnreadCount,
+        bool IsPinned,
+        bool IsMuted);
 }

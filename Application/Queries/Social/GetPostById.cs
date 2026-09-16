@@ -1,16 +1,19 @@
-﻿using Application.Common.Dtos;
+﻿using Application.Commands.Analytics;
+using Application.Common.Dtos;
 using Application.Common.Repositories;
+using Domain.Enums;
 using MediatR;
 
 namespace Application.Queries.Social
 {
     public class GetPostById
     {
-        public record GetPostByIdQuery(Guid PostId, Guid CurrentUserId) : IRequest<Result<PostFeedItemResponse>>;
+        public record GetPostByIdQuery(Guid PostId, Guid CurrentUserId, ReferrerSource Referrer) : IRequest<Result<PostFeedItemResponse>>;
 
         public class GetPostByIdHandler(
             IPostRepository postRepository,
-            IPostLikeRepository postLikeRepository) : IRequestHandler<GetPostByIdQuery, Result<PostFeedItemResponse>>
+            IPostLikeRepository postLikeRepository,
+            IMediator mediator) : IRequestHandler<GetPostByIdQuery, Result<PostFeedItemResponse>>
         {
             public async Task<Result<PostFeedItemResponse>> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
             {
@@ -20,6 +23,14 @@ namespace Application.Queries.Social
                 {
                     return Result<PostFeedItemResponse>.Failure("Post not found");
                 }
+
+                await mediator.Send(new LogAnalyticsEvent.LogAnalyticsEventCommand(
+                AnalyticsEventType.PostImpression,
+                AnalyticsSubjectType.Post,
+                post.Id,
+                request.CurrentUserId,
+                post.User.Id,
+                request.Referrer), cancellationToken);
 
                 var reactionCounts = await postLikeRepository.GetCountsByReactionTypeAsync(post.Id);
                 var myReaction = await postLikeRepository.GetByPostAndUserAsync(post.Id, request.CurrentUserId);

@@ -4,6 +4,7 @@ using Application.Contract.Settings;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using static Application.Queries.GetCompanyManagementOverview;
 
 namespace Application.Commands
 {
@@ -33,6 +34,9 @@ namespace Application.Commands
                 {
                     return Result<string>.Failure("You are not linked to a company");
                 }
+
+                if (requestingProfile.Status != RecruiterStatus.Active)
+                    return Result<string>.Failure("Your membership is pending");
 
                 if (!requestingProfile.IsCompanyAdmin)
                 {

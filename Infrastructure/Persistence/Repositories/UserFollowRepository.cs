@@ -116,5 +116,20 @@ namespace Infrastructure.Persistence.Repositories
         {
             context.UserFollows.Remove(follow);
         }
+
+        public async Task<List<IUserFollowRepository.DateCountDto>> GetFollowerGrowthAsync(
+            Guid userId, DateTime start, DateTime end)
+        {
+            return await context.UserFollows
+                .AsNoTracking()
+                .Where(f => f.FollowingId == userId
+                    && !f.IsDeleted
+                    && f.DateCreated >= start
+                    && f.DateCreated <= end)
+                .GroupBy(f => f.DateCreated.Date)
+                .Select(g => new IUserFollowRepository.DateCountDto { Date = g.Key, Count = g.Count() })
+                .OrderBy(x => x.Date)
+                .ToListAsync();
+        }
     }
 }

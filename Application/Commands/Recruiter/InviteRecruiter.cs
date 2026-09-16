@@ -6,6 +6,7 @@ using Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Options;
 using System.Security.Cryptography;
+using static Application.Queries.GetCompanyManagementOverview;
 
 namespace Application.Commands
 {
@@ -44,6 +45,9 @@ namespace Application.Commands
                 {
                     return Result<string>.Failure("Only a company admin can invite recruiters");
                 }
+
+                if (requestingProfile.Status != RecruiterStatus.Active)
+                    return Result<string>.Failure("Your membership is pending");
 
                 var company = await companyRepository.GetByIdAsync(requestingProfile.CompanyId!.Value);
 

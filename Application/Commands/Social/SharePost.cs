@@ -1,5 +1,6 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Repositories;
+using Application.Services.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 using MediatR;
@@ -12,6 +13,8 @@ namespace Application.Commands.Social
 
         public class SharePostHandler(
             IPostRepository postRepository,
+            IUserRepository userRepository,
+            INotificationService notificationService,
             IUnitOfWork unitOfWork) : IRequestHandler<SharePostCommand, Result<PostResponse>>
         {
             public async Task<Result<PostResponse>> Handle(SharePostCommand request, CancellationToken cancellationToken)
@@ -42,6 +45,22 @@ namespace Application.Commands.Social
 
                 await postRepository.AddAsync(share);
                 await unitOfWork.SaveAsync();
+
+                var sharer = await userRepository.GetByIdAsync(request.UserId);
+                var sharerName = sharer is not null ? $"{sharer.FirstName} {sharer.LastName}".Trim() : "Someone";
+
+                await notificationService.SendNotificationAsync(
+                    recipientUserId: trueOriginalOwnerId,
+                    actorUserId: request.UserId,
+                    actorName: sharerName,
+                    actorAvatarUrl: sharer?.ProfilePictureUrl,
+                    title: "Your post was shared",
+                    message: $"{sharerName} shared your post",
+                    type: NotificationType.Share,
+                    sourceEntityType: NotificationSourceEntityType.Post,
+                    sourceEntityId: trueOriginalId,
+                    actionUrl: $"/post-detail.html?id={share.Id}",
+                    createdBy: request.UserId.ToString());
 
                 return Result<PostResponse>.Success(
                     new PostResponse(share.Id, share.Content, share.Visibility, new List<string>(), share.DateCreated),

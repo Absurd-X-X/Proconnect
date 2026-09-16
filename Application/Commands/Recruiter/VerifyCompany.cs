@@ -1,7 +1,9 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Repositories;
 using Application.Constant;
+using Application.Services.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
 using MediatR;
 
 namespace Application.Commands
@@ -16,6 +18,8 @@ namespace Application.Commands
         public class VerifyCompanyHandler(
             ICompanyRepository companyRepository,
             IUserRepository userRepository,
+            IRecruiterProfileRepository recruiterProfileRepository,
+            INotificationService notificationService,
             IUnitOfWork unitOfWork,
             IAuditLogRepository auditLogRepository)
             : IRequestHandler<VerifyCompanyCommand, Result<Guid>>
@@ -58,6 +62,24 @@ namespace Application.Commands
                     });
 
                 await unitOfWork.SaveAsync();
+
+                var admins = await recruiterProfileRepository.GetCompanyAdminsAsync(company.Id);
+
+                foreach (var admin in admins)
+                {
+                    await notificationService.SendNotificationAsync(
+                        recipientUserId: admin.UserId,
+                        actorUserId: null,
+                        actorName: "ProConnect",
+                        actorAvatarUrl: null,
+                        title: "Company verified",
+                        message: $"{company.Name} has been verified on ProConnect",
+                        type: NotificationType.CompanyVerified,
+                        sourceEntityType: null,
+                        sourceEntityId: null,
+                        actionUrl: "/company-profile.html",
+                        createdBy: requestingUser.Id.ToString());
+                }
 
                 return Result<Guid>.Success(company.Id, "Company verified successfully");
             }

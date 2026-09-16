@@ -1,5 +1,6 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Repositories;
+using Application.Commands.Analytics;
 using Domain.Enums;
 using MediatR;
 
@@ -7,10 +8,11 @@ namespace Application.Queries.Professional
 {
     public class GetProfessionalProfile
     {
-        public record GetProfessionalProfileQuery(Guid Id) : IRequest<Result<GetProfessionalProfileResponse>>;
+        public record GetProfessionalProfileQuery(Guid Id, Guid? ViewerUserId, ReferrerSource Referrer) : IRequest<Result<GetProfessionalProfileResponse>>;
 
         public class GetProfessionalProfileHandler(
-            IProfessionalProfileRepository professionalProfileRepository) : IRequestHandler<GetProfessionalProfileQuery, Result<GetProfessionalProfileResponse>>
+            IProfessionalProfileRepository professionalProfileRepository,
+            IMediator mediator) : IRequestHandler<GetProfessionalProfileQuery, Result<GetProfessionalProfileResponse>>
         {
             public async Task<Result<GetProfessionalProfileResponse>> Handle(GetProfessionalProfileQuery request, CancellationToken cancellationToken)
             {
@@ -18,6 +20,14 @@ namespace Application.Queries.Professional
 
                 if (profile is null)
                     return Result<GetProfessionalProfileResponse>.Failure("Professional profile not found");
+
+                await mediator.Send(new LogAnalyticsEvent.LogAnalyticsEventCommand(
+                AnalyticsEventType.ProfileView,
+                AnalyticsSubjectType.ProfessionalProfile,
+                profile.Id,
+                request.ViewerUserId,
+                profile.UserId,
+                request.Referrer), cancellationToken);
 
                 var response = new GetProfessionalProfileResponse(
                     profile.Id,

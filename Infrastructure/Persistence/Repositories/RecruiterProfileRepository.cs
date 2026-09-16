@@ -16,6 +16,7 @@ namespace Infrastructure.Persistence.Repositories
         public async Task<RecruiterProfile?> GetByIdAsync(Guid id)
         {
             return await proConnectDb.RecruiterProfiles
+                .Include(u => u.User)
                 .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
         }
 
@@ -23,6 +24,7 @@ namespace Infrastructure.Persistence.Repositories
         {
             return await proConnectDb.RecruiterProfiles
                 .Include(r => r.Company)
+                .Include(u => u.User)
                 .FirstOrDefaultAsync(r => r.UserId == userId && !r.IsDeleted);
         }
 
@@ -63,6 +65,17 @@ namespace Infrastructure.Persistence.Repositories
                 PageNumber = 1,
                 PageSize = count
             };
+        }
+
+        public async Task<List<RecruiterProfile>> GetCompanyAdminsAsync(Guid companyId)
+        {
+            return await proConnectDb.RecruiterProfiles
+                .Include(r => r.User)
+                .Where(r => r.CompanyId == companyId
+                    && r.IsCompanyAdmin
+                    && r.Status == RecruiterStatus.Active
+                    && !r.IsDeleted)
+                .ToListAsync();
         }
 
         public void UpdateAsync(RecruiterProfile recruiterProfile)

@@ -3,7 +3,6 @@ using Application.Common.Repositories;
 using Application.Contract.Settings;
 using Application.Services.Interfaces;
 using Domain.Entities;
-using Domain.Enums;
 using MediatR;
 using Microsoft.Extensions.Options;
 
@@ -20,6 +19,7 @@ namespace Application.Commands
         public class ApproveRecruiterHandler(
             IRecruiterProfileRepository recruiterProfileRepository,
             ICompanyRepository companyRepository,
+            INotificationService notificationService,
             IUnitOfWork unitOfWork,
             IAuditLogRepository auditLogRepository,
             IEmailService emailService,
@@ -118,6 +118,21 @@ namespace Application.Commands
                                 : $"Update on your request to join {company.Name}",
                             Body = emailBody
                         });
+
+                    await notificationService.SendNotificationAsync(
+                        recipientUserId: targetProfile.UserId,
+                        actorUserId: requestingProfile.UserId,
+                        actorName: company.Name,
+                        actorAvatarUrl: company.LogoUrl,
+                        title: request.Approve ? "Recruiter request approved" : "Recruiter request rejected",
+                        message: request.Approve
+                            ? $"You've been approved to join {company.Name}"
+                            : $"Your request to join {company.Name} was not approved",
+                        type: NotificationType.RecruiterStatusUpdate,
+                        sourceEntityType: null,
+                        sourceEntityId: null,
+                        actionUrl: request.Approve ? "/recruiter-dashboard.html" : "/join-company.html",
+                        createdBy: requestingProfile.UserId.ToString());
                 }
 
                 return Result<Guid>.Success(

@@ -1,5 +1,7 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Repositories;
+using Application.Services.Interfaces;
+using Domain.Enums;
 using MediatR;
 
 namespace Application.Commands.Messaging
@@ -10,6 +12,7 @@ namespace Application.Commands.Messaging
 
         public class MarkConversationReadHandler(
             IConversationParticipantRepository participantRepository,
+            INotificationService notificationService,
             IUnitOfWork unitOfWork) : IRequestHandler<MarkConversationReadCommand, Result<string>>
         {
             public async Task<Result<string>> Handle(MarkConversationReadCommand request, CancellationToken cancellationToken)
@@ -24,6 +27,9 @@ namespace Application.Commands.Messaging
                 participant.LastReadAt = DateTime.UtcNow;
                 participantRepository.Update(participant);
                 await unitOfWork.SaveAsync();
+
+                await notificationService.MarkAsReadBySourceAsync(
+                    request.UserId, NotificationSourceEntityType.Conversation, request.ConversationId);
 
                 return Result<string>.Success(string.Empty, "Marked as read");
             }

@@ -48,7 +48,13 @@ namespace Domain.Entities
 
         public DateTime UpdatedAt { get; set; }
 
+        public JobPostingStatus Status { get; set; } = JobPostingStatus.Draft;
+
+        public DateTime? ScheduledPublishAt { get; set; }
+
         public ICollection<SavedJob> SavedJobs { get; set; } = new HashSet<SavedJob>();
+
+        public ICollection<JobSkill> JobSkills { get; set; } = new HashSet<JobSkill>();
 
         public ICollection<JobApplication> JobApplications { get; set; } = new HashSet<JobApplication>();
     }

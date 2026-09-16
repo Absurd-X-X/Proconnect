@@ -1,85 +1,140 @@
-﻿using Application.Services.Interfaces;
+﻿using Application.Common.Repositories;
+using Application.Services.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.Hubs;
-using Infrastructure.Persistence.Context;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services
 {
-    public class NotificationService : INotificationService
+    public class NotificationService(
+        INotificationRepository notificationRepository,
+        IUnitOfWork unitOfWork,
+        IHubContext<NotificationHub> hubContext) : INotificationService
     {
-        private readonly ProConnectDbContext _context;
-        private readonly IHubContext<NotificationHub> _hubContext;
-
-        public NotificationService(
-            ProConnectDbContext context,
-            IHubContext<NotificationHub> hubContext)
-        {
-            _context = context;
-            _hubContext = hubContext;
-        }
-
         public async Task SendNotificationAsync(
-            Guid userId,
+            Guid recipientUserId,
+            Guid? actorUserId,
+            string? actorName,
+            string? actorAvatarUrl,
             string title,
             string message,
             NotificationType type,
-            string? actionUrl = null)
+            NotificationSourceEntityType? sourceEntityType,
+            Guid? sourceEntityId,
+            string? actionUrl,
+            string createdBy)
         {
-            // 1. Save to DB
             var notification = new Notification
             {
-                UserId = userId,
+                UserId = recipientUserId,
+                ActorUserId = actorUserId,
+                ActorName = actorName,
+                ActorAvatarUrl = actorAvatarUrl,
                 Title = title,
                 Message = message,
                 Type = type,
-                //ActionUrl = actionUrl,
-                IsRead = false,
-                CreatedBy = "System"
+                SourceEntityType = sourceEntityType,
+                SourceEntityId = sourceEntityId,
+                ActionUrl = actionUrl,
+                CreatedBy = createdBy
             };
 
-            _context.Notifications.Add(notification);
-            await _context.SaveChangesAsync();
+            await notificationRepository.AddAsync(notification);
+            await unitOfWork.SaveAsync();
 
-            // 2. Push real-time via SignalR
-            await _hubContext.Clients
-                .Group($"user_{userId}")
+            var unreadCount = await notificationRepository.GetUnreadCountAsync(recipientUserId);
+
+            await hubContext.Clients
+                .Group($"user_{recipientUserId}")
                 .SendAsync("ReceiveNotification", new
                 {
                     id = notification.Id,
+                    actorName = notification.ActorName,
+                    actorAvatarUrl = notification.ActorAvatarUrl,
                     title = notification.Title,
                     message = notification.Message,
                     type = notification.Type.ToString(),
-                    //actionUrl = notification.ActionUrl,
-                    createdAt = notification.DateCreated
+                    actionUrl = notification.ActionUrl,
+                    dateCreated = notification.DateCreated
                 });
+
+            await hubContext.Clients
+                .Group($"user_{recipientUserId}")
+                .SendAsync("UpdateUnreadCount", unreadCount);
         }
 
-        public async Task MarkAsReadAsync(Guid notificationId)
+        public async Task MarkAsReadAsync(Guid notificationId, Guid userId)
         {
-            var notification = await _context.Notifications
-                .FirstOrDefaultAsync(n => n.Id == notificationId);
+            var notification = await notificationRepository.GetByIdAsync(notificationId, userId);
 
-            if (notification == null) return;
+            if (notification is null || notification.Status == NotificationStatus.Read)
+            {
+                return;
+            }
 
-            notification.IsRead = true;
-            await _context.SaveChangesAsync();
+            notification.Status = NotificationStatus.Read;
+            notification.DateRead = DateTime.UtcNow;
+            notification.DateModified = DateTime.UtcNow;
+
+            notificationRepository.Update(notification);
+            await unitOfWork.SaveAsync();
+
+            var unreadCount = await notificationRepository.GetUnreadCountAsync(userId);
+
+            await hubContext.Clients
+                .Group($"user_{userId}")
+                .SendAsync("UpdateUnreadCount", unreadCount);
         }
 
         public async Task MarkAllAsReadAsync(Guid userId)
         {
-            var notifications = await _context.Notifications
-                .Where(n => n.UserId == userId && !n.IsRead)
-                .ToListAsync();
+            var notifications = await notificationRepository.GetAllUnreadAsync(userId);
+
+            if (notifications.Count == 0)
+            {
+                return;
+            }
 
             foreach (var notification in notifications)
             {
-                notification.IsRead = true;
+                notification.Status = NotificationStatus.Read;
+                notification.DateRead = DateTime.UtcNow;
+                notification.DateModified = DateTime.UtcNow;
+                notificationRepository.Update(notification);
             }
 
-            await _context.SaveChangesAsync();
+            await unitOfWork.SaveAsync();
+
+            await hubContext.Clients
+                .Group($"user_{userId}")
+                .SendAsync("UpdateUnreadCount", 0);
+        }
+
+        public async Task MarkAsReadBySourceAsync(Guid userId, NotificationSourceEntityType sourceEntityType, Guid sourceEntityId)
+        {
+            var notifications = await notificationRepository.GetUnreadBySourceAsync(userId, sourceEntityType, sourceEntityId);
+
+            if (notifications.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var notification in notifications)
+            {
+                notification.Status = NotificationStatus.Read;
+                notification.DateRead = DateTime.UtcNow;
+                notification.DateModified = DateTime.UtcNow;
+                notificationRepository.Update(notification);
+            }
+
+            await unitOfWork.SaveAsync();
+
+            var unreadCount = await notificationRepository.GetUnreadCountAsync(userId);
+
+            await hubContext.Clients
+                .Group($"user_{userId}")
+                .SendAsync("UpdateUnreadCount", unreadCount);
         }
     }
 }

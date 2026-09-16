@@ -36,5 +36,12 @@ namespace Application.Common.Repositories
         Task<HashSet<Guid>> GetRelatedUserIdsAsync(Guid userId);
 
         Task<int> GetMutualConnectionsCountAsync(Guid userIdA, Guid userIdB);
+        Task<List<DateCountDto>> GetConnectionGrowthAsync(Guid userId, DateTime start, DateTime end);
+
+        public class DateCountDto
+        {
+            public DateTime Date { get; set; }
+            public int Count { get; set; }
+        }
     }
 }

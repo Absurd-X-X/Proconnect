@@ -12,6 +12,8 @@ namespace Infrastructure.Persistence.Context
 
         public DbSet<AuditLog> AuditLogs { get; set; }
 
+        public DbSet<AnalyticsEvent> AnalyticsEvents { get; set; }
+
         public DbSet<Certificate> Certificates { get; set; }
 
         public DbSet<Comment> Comments { get; set; }
@@ -20,11 +22,21 @@ namespace Infrastructure.Persistence.Context
 
         public DbSet<Conversation> Conversations { get; set; }
 
+        public DbSet<CompanyReview> CompanyReviews { get; set; }
+
         public DbSet<ConversationParticipant> ConversationParticipants { get; set; }
 
         public DbSet<Education> Educations { get; set; }
 
         public DbSet<Experience> Experiences { get; set; }
+
+        public DbSet<Event> Events { get; set; }
+
+        public DbSet<EventAgendaItem>  EventAgendaItems { get; set; }
+
+        public DbSet<EventRegistration> EventRegistrations { get; set; }
+
+        public DbSet<EventSpeaker> EventSpeakers { get; set; }
 
         public DbSet<FileUpload> FileUploads { get; set; }
 
@@ -33,6 +45,8 @@ namespace Infrastructure.Persistence.Context
         public DbSet<JobApplication> JobApplications { get; set; }
 
         public DbSet<JobCategory> JobCategories { get; set; }
+
+        public DbSet<JobSkill> JobSkills { get; set; }
 
         public DbSet<Message> Messages { get; set; }
 
@@ -46,6 +60,8 @@ namespace Infrastructure.Persistence.Context
 
         public DbSet<ProfessionalSkill> ProfessionalSkills { get; set; }
 
+        public DbSet<SavedJobSearch> SavedJobSearches { get; set; }
+
         public DbSet<Project> Projects { get; set; }
 
         public DbSet<PortfolioLink> PortfolioLinks { get; set; }
@@ -55,6 +71,8 @@ namespace Infrastructure.Persistence.Context
         public DbSet<Report> Reports { get; set; }
 
         public DbSet<SavedJob> SavedJobs { get; set; }
+
+        public DbSet<SavedEvent> SavedEvents { get; set; }
 
         public DbSet<Skill> Skills { get; set; }
 

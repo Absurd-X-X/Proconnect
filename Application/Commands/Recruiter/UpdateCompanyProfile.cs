@@ -3,6 +3,7 @@ using Application.Common.Repositories;
 using Domain.Entities;
 using MediatR;
 using System.Text.Json;
+using static Application.Queries.GetCompanyManagementOverview;
 
 namespace Application.Commands
 {
@@ -62,6 +63,9 @@ namespace Application.Commands
                 {
                     return Result<Guid>.Failure("Company not found");
                 }
+
+                if (requestingProfile.Status != RecruiterStatus.Active)
+                    return Result<Guid>.Failure("Your membership is pending");
 
                 if (!string.Equals(company.Name, request.Name, StringComparison.OrdinalIgnoreCase))
                 {

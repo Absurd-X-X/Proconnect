@@ -70,6 +70,22 @@ namespace Infrastructure.Persistence.Repositories
             };
         }
 
+        public async Task<HashSet<Guid>> GetRelatedUserIdsAsync(Guid userId)
+        {
+            var conversationIds = await context.ConversationParticipants
+                .Where(p => p.UserId == userId && !p.IsDeleted)
+                .Select(p => p.ConversationId)
+                .ToListAsync();
+
+            var relatedIds = await context.ConversationParticipants
+                .Where(p => conversationIds.Contains(p.ConversationId) && p.UserId != userId && !p.IsDeleted)
+                .Select(p => p.UserId)
+                .Distinct()
+                .ToListAsync();
+
+            return relatedIds.ToHashSet();
+        }
+
         public void Update(ConversationParticipant participant)
         {
             context.ConversationParticipants.Update(participant);

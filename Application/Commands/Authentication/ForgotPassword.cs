@@ -14,7 +14,6 @@ namespace Application.Commands.Authentication
     {
         public record ForgotPasswordCommand(string Email) : IRequest<Result<string>>;
 
-
         public class ForgotPasswordHAndler(
             IUserRepository userRepository,
             IUnitOfWork unitOfWork,

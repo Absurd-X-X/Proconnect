@@ -1,6 +1,5 @@
 ﻿using Application.Common.Pagenation;
 using Domain.Entities;
-
 namespace Application.Common.Repositories
 {
     public interface IUserFollowRepository
@@ -18,5 +17,13 @@ namespace Application.Common.Repositories
         Task<int> GetFollowingCountAsync(Guid userId);
 
         void Delete(UserFollow follow);
+
+        Task<List<DateCountDto>> GetFollowerGrowthAsync(Guid userId, DateTime start, DateTime end);
+
+        public class DateCountDto
+        {
+            public DateTime Date { get; set; }
+            public int Count { get; set; }
+        }
     }
 }

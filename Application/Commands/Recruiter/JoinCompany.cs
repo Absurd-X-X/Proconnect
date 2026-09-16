@@ -1,5 +1,6 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Repositories;
+using Application.Services.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 using MediatR;
@@ -17,6 +18,7 @@ namespace Application.Commands.Recruiter
             ICompanyRepository companyRepository,
             IRecruiterProfileRepository recruiterProfileRepository,
             IUserRepository userRepository,
+            INotificationService notificationService,
             IUnitOfWork unitOfWork,
             IAuditLogRepository auditLogRepository)
             : IRequestHandler<JoinCompanyCommand, Result<Guid>>
@@ -88,6 +90,25 @@ namespace Application.Commands.Recruiter
                     });
 
                 await unitOfWork.SaveAsync();
+
+                var applicantName = $"{user.FirstName} {user.LastName}".Trim();
+                var admins = await recruiterProfileRepository.GetCompanyAdminsAsync(company.Id);
+
+                foreach (var admin in admins)
+                {
+                    await notificationService.SendNotificationAsync(
+                        recipientUserId: admin.UserId,
+                        actorUserId: user.Id,
+                        actorName: applicantName,
+                        actorAvatarUrl: user.ProfilePictureUrl,
+                        title: "New join request",
+                        message: $"{applicantName} requested to join {company.Name}",
+                        type: NotificationType.CompanyJoinRequest,
+                        sourceEntityType: null,
+                        sourceEntityId: existingProfile.Id,
+                        actionUrl: "/recruiter-management.html?tab=pending",
+                        createdBy: user.Id.ToString());
+                }
 
                 return Result<Guid>.Success(
                     existingProfile.Id,

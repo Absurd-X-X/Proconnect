@@ -13,6 +13,8 @@ namespace Application.Common.Repositories
 
         Task<PageResponse<RecruiterProfile>> GetByCompanyIdAsync(PageRequest request, bool usePaging, Guid companyId, RecruiterStatus? status);
 
+        Task<List<RecruiterProfile>> GetCompanyAdminsAsync(Guid companyId);
+
         void UpdateAsync(RecruiterProfile recruiterProfile);
 
         void Delete(RecruiterProfile recruiterProfile);

@@ -42,6 +42,7 @@ using static Application.Queries.Professional.GetProfessionalSkillById;
 using static Application.Queries.Professional.GetProfessionalSkillsByProfile;
 using static Application.Queries.Professional.GetProjectById;
 using static Application.Queries.Professional.GetProjectsByProfile;
+using static Application.Queries.Skills.GetSkills;
 
 namespace Host.Controllers.Professional
 {
@@ -200,10 +201,13 @@ namespace Host.Controllers.Professional
         }
 
         [HttpGet("profile/{id}")]
-
-        public async Task<IActionResult> GetProfile(Guid id)
+        public async Task<IActionResult> GetProfile(Guid id, [FromQuery] string? referer)
         {
-            var response = await mediator.Send(new GetProfessionalProfileQuery(id));
+            Guid? viewerUserId = User.Identity?.IsAuthenticated == true
+                ? ClaimsHelper.GetUserId(User)
+                : null;
+
+            var response = await mediator.Send(new GetProfessionalProfileQuery(id, viewerUserId, ReferrerHelper.Parse(referer)));
 
             if (!response.Status)
             {
@@ -599,6 +603,20 @@ namespace Host.Controllers.Professional
         {
             var response = await mediator.Send(command);
             if (!response.Status) return BadRequest(response);
+            return Ok(response);
+        }
+
+        [HttpGet("skills")]
+
+        public async Task<IActionResult> GetSkills()
+        {
+            var response = await mediator.Send(new GetSkillsQuery());
+
+            if (!response.Status)
+            {
+                return BadRequest(response);
+            }
+
             return Ok(response);
         }
     }

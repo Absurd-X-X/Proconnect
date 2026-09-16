@@ -59,5 +59,7 @@
         public ICollection<Job> Jobs { get; set; } = new HashSet<Job>();
 
         public ICollection<RecruiterProfile> RecruiterProfiles { get; set; } = new HashSet<RecruiterProfile>();
+
+        public ICollection<Event> Events { get; set; } = new HashSet<Event>();
     }
 }

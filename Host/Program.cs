@@ -134,9 +134,29 @@ builder.Services.AddScoped<IFileUploadRepository, FileUploadRepository>();
 
 builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
 
+builder.Services.AddScoped<IJobRepository, JobRepository>();
+
+builder.Services.AddScoped<IJobApplicationRepository, JobApplicationRepository>();
+
+builder.Services.AddScoped<ISavedJobRepository, SavedJobRepository>();
+
+builder.Services.AddScoped<IJobCategoryRepository, JobCategoryRepository>();
+
 builder.Services.AddScoped<IConversationParticipantRepository, ConversationParticipantRepository>();
 
+builder.Services.AddScoped<IJobSkillRepository, JobSkillRepository>();
+
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+
+
+
+builder.Services.AddScoped<ICompanyReviewRepository, CompanyReviewRepository>();
+
+builder.Services.AddScoped<ISavedJobSearchRepository, SavedJobSearchRepository>();
+
+builder.Services.AddHostedService<JobAlertMatchingService>();
 
 
 // Skill
@@ -169,9 +189,20 @@ builder.Services.AddScoped<ICertificateRepository, CertificateRepository>();
  //Audit Log
 builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+
+
+builder.Services.AddScoped<IEventRepository, EventRepository>();
+
+builder.Services.AddScoped<IEventRegistrationRepository, EventRegistrationRepository>();
+builder.Services.AddScoped<ISavedEventRepository, SavedEventRepository>();
+
+
+builder.Services.AddScoped<IAnalyticsEventRepository, AnalyticsEventRepository>();
 
 
 builder.Services.Configure<JwtSetiings>(builder.Configuration.GetSection("Jwt"));
@@ -179,6 +210,9 @@ builder.Services.Configure<JwtSetiings>(builder.Configuration.GetSection("Jwt"))
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSetiings>();
+
+
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
 {
     opt.TokenValidationParameters = new TokenValidationParameters
@@ -190,6 +224,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidIssuer = jwtSettings!.Issuer,
         ValidAudience = jwtSettings.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+    };
+
+    opt.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+
+            if (!string.IsNullOrEmpty(accessToken) &&
+                (path.StartsWithSegments("/chatHub") || path.StartsWithSegments("/notificationHub")))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -269,17 +320,13 @@ if (app.Environment.IsDevelopment())
 }
 
 
-app.MapHub<NotificationHub>("/notificationHub");
-app.MapHub<ChatHub>("/chatHub");
-
-
 app.UseCors("AllowFrontend");
-
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHub<NotificationHub>("/notificationHub");
+app.MapHub<ChatHub>("/chatHub");
 app.MapControllers();
 
 app.Run();

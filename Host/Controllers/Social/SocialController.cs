@@ -199,9 +199,9 @@ namespace Host.Controllers.Posts
 
         [Authorize]
         [HttpGet("post/{postId}")]
-        public async Task<IActionResult> GetPost(Guid postId)
+        public async Task<IActionResult> GetPost(Guid postId, [FromQuery] string? @ref)
         {
-            var response = await mediator.Send(new GetPostByIdQuery(postId, ClaimsHelper.GetUserId(User)));
+            var response = await mediator.Send(new GetPostByIdQuery(postId, ClaimsHelper.GetUserId(User), ReferrerHelper.Parse(@ref)));
 
             if (!response.Status)
             {

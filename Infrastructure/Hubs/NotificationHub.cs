@@ -1,21 +1,36 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Infrastructure.Hubs
 {
+    [Authorize]
     public class NotificationHub : Hub
     {
-        // Each user joins their own private group
-        // so notifications are only sent to them
-        public async Task JoinUserGroup(string userId)
+        private string? GetUserId() => Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        public override async Task OnConnectedAsync()
         {
-            await Groups.AddToGroupAsync(
-                Context.ConnectionId, $"user_{userId}");
+            var userId = GetUserId();
+
+            if (userId is not null)
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"user_{userId}");
+            }
+
+            await base.OnConnectedAsync();
         }
 
-        public async Task LeaveUserGroup(string userId)
+        public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            await Groups.RemoveFromGroupAsync(
-                Context.ConnectionId, $"user_{userId}");
+            var userId = GetUserId();
+
+            if (userId is not null)
+            {
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"user_{userId}");
+            }
+
+            await base.OnDisconnectedAsync(exception);
         }
     }
 }

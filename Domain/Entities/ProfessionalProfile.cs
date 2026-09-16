@@ -60,6 +60,8 @@ namespace Domain.Entities
 
         public ICollection<SavedJob> SavedJobs { get; set; } = new HashSet<SavedJob>();
 
+        public ICollection<SavedJobSearch> SavedJobSearches { get; set; } = new HashSet<SavedJobSearch>();
+
         public ICollection<Experience> Experiences { get; set; } = new HashSet<Experience>();
 
         public ICollection<Certificate> Certificates { get; set; } = new HashSet<Certificate>();
@@ -73,5 +75,9 @@ namespace Domain.Entities
         public ICollection<JobApplication> JobApplications { get; set; } = new HashSet<JobApplication>();
 
         public ICollection<PortfolioLink> PortfolioLinks { get; set; } = new HashSet<PortfolioLink>();
+
+        public ICollection<EventRegistration> EventRegistrations { get; set; } = new HashSet<EventRegistration>();
+
+        public ICollection<SavedEvent> SavedEvents { get; set; } = new HashSet<SavedEvent>();
     }
 }

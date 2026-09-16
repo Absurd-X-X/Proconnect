@@ -4,6 +4,7 @@ using Application.Common.Repositories;
 using Domain.Entities;
 using Domain.Enums;
 using MediatR;
+using static Application.Queries.GetCompanyManagementOverview;
 
 namespace Application.Queries
 {
@@ -45,6 +46,9 @@ namespace Application.Queries
                 {
                     return Result<PageResponse<TeamMemberResponse>>.Failure("You are not linked to a company");
                 }
+
+                if (requestingProfile.Status != RecruiterStatus.Active)
+                    return Result<PageResponse<TeamMemberResponse>>.Failure("Your membership is pending");
 
                 var pageRequest = new PageRequest
                 {

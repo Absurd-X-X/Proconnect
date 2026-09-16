@@ -16,6 +16,8 @@ namespace Application.Common.Repositories
         PageRequest request,
         bool usePaging);
 
+        Task<HashSet<Guid>> GetRelatedUserIdsAsync(Guid userId);
+
         void Update(ConversationParticipant participant);
     }
 }

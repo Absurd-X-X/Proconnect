@@ -1,5 +1,6 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Repositories;
+using Domain.Entities;
 using MediatR;
 
 namespace Application.Queries
@@ -41,6 +42,9 @@ namespace Application.Queries
                 {
                     return Result<ManagementOverviewResponse>.Failure("Company not found");
                 }
+
+                if (requestingProfile.Status != RecruiterStatus.Active) 
+                    return Result<ManagementOverviewResponse>.Failure("Your membership is pending");
 
                 var activeCandidateCount = company.Jobs
                     .SelectMany(j => j.JobApplications)

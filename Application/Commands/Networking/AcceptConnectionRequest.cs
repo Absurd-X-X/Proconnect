@@ -1,5 +1,6 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Repositories;
+using Application.Services.Interfaces;
 using Domain.Enums;
 using MediatR;
 
@@ -11,6 +12,8 @@ namespace Application.Commands.Networking
 
         public class AcceptConnectionRequestHandler(
             IUserConnectionRepository connectionRepository,
+            IUserRepository userRepository,
+            INotificationService notificationService,
             IUnitOfWork unitOfWork) : IRequestHandler<AcceptConnectionRequestCommand, Result<ConnectionResponse>>
         {
             public async Task<Result<ConnectionResponse>> Handle(AcceptConnectionRequestCommand request, CancellationToken cancellationToken)
@@ -37,6 +40,22 @@ namespace Application.Commands.Networking
 
                 connectionRepository.Update(connection);
                 await unitOfWork.SaveAsync();
+
+                var accepter = await userRepository.GetByIdAsync(request.UserId);
+                var accepterName = accepter is not null ? $"{accepter.FirstName} {accepter.LastName}".Trim() : "Someone";
+
+                await notificationService.SendNotificationAsync(
+                    recipientUserId: connection.SenderId,
+                    actorUserId: request.UserId,
+                    actorName: accepterName,
+                    actorAvatarUrl: accepter?.ProfilePictureUrl,
+                    title: "Connection request accepted",
+                    message: $"{accepterName} accepted your connection request",
+                    type: NotificationType.ConnectionAccepted,
+                    sourceEntityType: NotificationSourceEntityType.ConnectionRequest,
+                    sourceEntityId: connection.Id,
+                    actionUrl: $"/profile.html?userId={request.UserId}",
+                    createdBy: request.UserId.ToString());
 
                 return Result<ConnectionResponse>.Success(
                     new ConnectionResponse(connection.Id, connection.SenderId, connection.RecieverId, connection.ConnectionStatus, connection.DateCreated),

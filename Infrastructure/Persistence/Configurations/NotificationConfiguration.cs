@@ -20,17 +20,43 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
             .IsRequired();
 
         builder.Property(x => x.Type)
-            .HasConversion<int>();
+            .HasConversion<int>()
+            .IsRequired();
 
-        builder.Property(x => x.IsRead)
-            .HasDefaultValue(false);
+        builder.Property(x => x.SourceEntityType)
+            .HasConversion<int?>();
+
+        builder.Property(x => x.ActionUrl)
+            .HasMaxLength(500);
+
+        builder.Property(x => x.ActorName)
+            .HasMaxLength(200);
+
+        builder.Property(x => x.ActorAvatarUrl)
+            .HasMaxLength(500);
+
+        builder.Property(x => x.Status)
+            .HasConversion<int>()
+            .HasDefaultValue(Domain.Enums.NotificationStatus.Unread)
+            .IsRequired();
 
         builder.Property(x => x.DateCreated)
-    .IsRequired();
+            .IsRequired();
+
+        builder.Property(x => x.CreatedBy)
+            .HasMaxLength(450)
+            .IsRequired();
 
         builder.HasOne(x => x.User)
             .WithMany(x => x.Notifications)
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(x => x.ActorUser)
+            .WithMany()
+            .HasForeignKey(x => x.ActorUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(x => new { x.UserId, x.IsDeleted, x.Status, x.DateCreated });
     }
 }

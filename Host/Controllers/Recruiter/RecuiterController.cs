@@ -1,14 +1,22 @@
 ﻿using Application.Commands;
 using Application.Commands.Recruiter;
+using Application.Common.Pagenation;
 using Application.Queries;
 using Application.Queries.Recruiter;
 using Domain.Entities;
 using Host.Helpers;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 using static Application.Commands.ApproveRecruiter;
+using static Application.Queries.Recruiter.MarkReviewHelpful;
 using static Application.Commands.RemoveRecruiter;
+using static Application.Commands.Review.CreateCompanyReview;
+using static Application.Queries.Company.GetCompanyRatingSummary;
+using static Application.Queries.Company.GetCompanyReviews;
+using static Application.Queries.Company.GetPeopleYouMightKnowAtCompany;
+using static Application.Queries.Recruiter.GetCompanyPublicProfile;
 
 namespace Host.Controllers.Recruiter
 {
@@ -125,6 +133,57 @@ namespace Host.Controllers.Recruiter
             var result = await sender.Send(
                 new GetRecruiterProfile.GetRecruiterProfileQuery(ClaimsHelper.GetUserId(User)));
             return result.Status ? Ok(result) : BadRequest(result);
+        }
+
+        // Add to RecruiterController (or wherever [Route("api/Recruiter")] lives)
+
+        [HttpGet("public-profile/{companyId}")]
+        public async Task<IActionResult> GetCompanyPublicProfile(Guid companyId)
+        {
+            var response = await sender.Send(new GetCompanyPublicProfileQuery(companyId));
+            if (!response.Status) return BadRequest(response);
+            return Ok(response);
+        }
+
+        [HttpGet("reviews/{companyId}")]
+        public async Task<IActionResult> GetCompanyReviews(Guid companyId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] bool usePaging = true)
+        {
+            var pageRequest = new PageRequest { PageNumber = pageNumber, PageSize = pageSize };
+            var response = await sender.Send(new GetCompanyReviewsQuery(companyId, pageRequest, usePaging));
+            if (!response.Status) return BadRequest(response);
+            return Ok(response);
+        }
+
+        [HttpGet("rating-summary/{companyId}")]
+        public async Task<IActionResult> GetCompanyRatingSummary(Guid companyId)
+        {
+            var response = await sender.Send(new GetCompanyRatingSummaryQuery(companyId));
+            if (!response.Status) return BadRequest(response);
+            return Ok(response);
+        }
+
+        [HttpPost("submit-review")]
+        public async Task<IActionResult> CreateCompanyReview(CreateCompanyReviewCommand command)
+        {
+            var response = await sender.Send(command);
+            if (!response.Status) return BadRequest(response);
+            return Ok(response);
+        }
+
+        [HttpPost("mark-review-helpful")]
+        public async Task<IActionResult> MarkReviewHelpful(MarkReviewHelpfulCommand command)
+        {
+            var response = await sender.Send(command);
+            if (!response.Status) return BadRequest(response);
+            return Ok(response);
+        }
+
+        [HttpGet("people-you-might-know/{companyId}")]
+        public async Task<IActionResult> GetPeopleYouMightKnow(Guid companyId, [FromQuery] Guid currentUserId, [FromQuery] int take = 5)
+        {
+            var response = await sender.Send(new GetPeopleYouMightKnowAtCompanyQuery(companyId, currentUserId, take));
+            if (!response.Status) return BadRequest(response);
+            return Ok(response);
         }
     }
 }

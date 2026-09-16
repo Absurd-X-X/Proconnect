@@ -1,7 +1,9 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Repositories;
 using Application.Contract.Settings;
+using Application.Services.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
@@ -21,6 +23,7 @@ namespace Application.Commands.Messaging
             IMessageRepository messageRepository,
             IFileUploadRepository fileUploadRepository,
             IFileStorage fileStorage,
+            INotificationService notificationService,
             IUnitOfWork unitOfWork) : IRequestHandler<SendMessageCommand, Result<MessageResponse>>
         {
             public async Task<Result<MessageResponse>> Handle(SendMessageCommand request, CancellationToken cancellationToken)
@@ -85,6 +88,32 @@ namespace Application.Commands.Messaging
                     conversation.DateModified = DateTime.UtcNow;
                     conversationRepository.Update(conversation);
                     await unitOfWork.SaveAsync();
+                }
+
+                var allParticipants = await participantRepository.GetByConversationIdAsync(request.ConversationId);
+
+                var sender = allParticipants.FirstOrDefault(p => p.UserId == request.UserId)?.User;
+                var senderName = sender is not null ? $"{sender.FirstName} {sender.LastName}".Trim() : "Someone";
+                var senderAvatar = sender?.ProfilePictureUrl;
+
+                var notifyPreview = string.IsNullOrWhiteSpace(request.Content)
+                    ? "Sent an attachment"
+                    : request.Content.Length > 100 ? request.Content[..100] + "..." : request.Content;
+
+                foreach (var recipient in allParticipants.Where(p => p.UserId != request.UserId && !p.IsMuted))
+                {
+                    await notificationService.SendNotificationAsync(
+                        recipientUserId: recipient.UserId,
+                        actorUserId: request.UserId,
+                        actorName: senderName,
+                        actorAvatarUrl: senderAvatar,
+                        title: conversation is not null && conversation.IsGroup ? conversation.Title ?? "Group message" : senderName,
+                        message: notifyPreview,
+                        type: NotificationType.Message,
+                        sourceEntityType: NotificationSourceEntityType.Conversation,
+                        sourceEntityId: request.ConversationId,
+                        actionUrl: $"/messages.html?conversationId={request.ConversationId}",
+                        createdBy: request.UserId.ToString());
                 }
 
                 return Result<MessageResponse>.Success(

@@ -29,6 +29,8 @@
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
         public ICollection<Job> Jobs { get; set; } = new HashSet<Job>();
+
+        public ICollection<Event> Events { get; set; } = new HashSet<Event>();
     }
 
 

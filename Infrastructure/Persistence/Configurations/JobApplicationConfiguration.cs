@@ -27,6 +27,10 @@ public class JobApplicationConfiguration : IEntityTypeConfiguration<JobApplicati
             x.ProfessionalProfileId
         }).IsUnique();
 
+        builder.Property(x => x.WorkAuthorization)
+        .HasConversion<string>()
+        .HasMaxLength(50);
+
         builder.HasOne(x => x.Job)
             .WithMany(x => x.JobApplications)
             .HasForeignKey(x => x.JobId)
@@ -36,5 +40,7 @@ public class JobApplicationConfiguration : IEntityTypeConfiguration<JobApplicati
             .WithMany(x => x.JobApplications)
             .HasForeignKey(x => x.ProfessionalProfileId)
             .OnDelete(DeleteBehavior.Cascade);
+
+
     }
 }

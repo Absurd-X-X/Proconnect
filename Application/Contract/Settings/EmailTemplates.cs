@@ -726,6 +726,61 @@ namespace Application.Contract.Settings
 
                 appUrl);
         }
+
+        public static string InterviewScheduledEmail(
+    string applicantName,
+    string jobTitle,
+    string companyName,
+    DateTime interviewDateTime,
+    string interviewType,
+    string locationOrLink,
+    string appUrl)
+        {
+            return BaseTemplate(
+
+                "Interview Scheduled 🗓️",
+
+                $@"
+
+        <p>
+        Hello <strong>{applicantName}</strong>,
+        </p>
+
+        <p>
+        Good news — <strong>{companyName}</strong> has scheduled an interview
+        for your application to:
+        </p>
+
+        <h3 style='text-align:center;'>
+
+        {jobTitle}
+
+        </h3>
+
+        <div style='
+        background:#F3F4F6;
+        padding:20px;
+        border-radius:10px;
+        margin:25px 0;'>
+
+        <p style='margin:0 0 8px;'><strong>Date &amp; Time:</strong> {interviewDateTime:dddd, MMMM d, yyyy 'at' h:mm tt} UTC</p>
+        <p style='margin:0 0 8px;'><strong>Type:</strong> {interviewType}</p>
+        <p style='margin:0;'><strong>Location/Link:</strong> {locationOrLink}</p>
+
+        </div>
+
+        <p>
+
+        Good luck!
+
+        </p>
+
+        ",
+
+                "View Application",
+
+                appUrl);
+        }
     }
 }
 

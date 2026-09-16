@@ -3,6 +3,7 @@ using Application.Common.Repositories;
 using Application.Contract.Settings;
 using Application.Services.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
 using MediatR;
 using Microsoft.Extensions.Options;
 
@@ -18,6 +19,7 @@ namespace Application.Commands
         public class RemoveRecruiterHandler(
             IRecruiterProfileRepository recruiterProfileRepository,
             ICompanyRepository companyRepository,
+            INotificationService notificationService,
             IUnitOfWork unitOfWork,
             IAuditLogRepository auditLogRepository,
             IEmailService emailService,
@@ -85,6 +87,19 @@ namespace Application.Commands
                             Body = EmailTemplates.RecruiterRemovedEmail(
                                 targetProfile.User.FirstName, company.Name, settings.FrontendUrl)
                         });
+
+                    await notificationService.SendNotificationAsync(
+                        recipientUserId: targetProfile.UserId,
+                        actorUserId: requestingProfile.UserId,
+                        actorName: company.Name,
+                        actorAvatarUrl: company.LogoUrl,
+                        title: "Removed from company",
+                        message: $"You've been removed from {company.Name}",
+                        type: NotificationType.RecruiterStatusUpdate,
+                        sourceEntityType: null,
+                        sourceEntityId: null,
+                        actionUrl: "/join-company.html",
+                        createdBy: requestingProfile.UserId.ToString());
                 }
 
                 return Result<Guid>.Success(targetProfile.Id, "Recruiter removed from company");

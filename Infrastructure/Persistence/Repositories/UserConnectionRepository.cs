@@ -199,5 +199,21 @@ namespace Infrastructure.Persistence.Repositories
 
             return aConnections.Intersect(bConnections).Count();
         }
+
+        public async Task<List<IUserConnectionRepository.DateCountDto>> GetConnectionGrowthAsync(
+            Guid userId, DateTime start, DateTime end)
+        {
+            return await context.UserConnections
+                .AsNoTracking()
+                .Where(c => (c.SenderId == userId || c.RecieverId == userId)
+                    && c.ConnectionStatus == ConnectionStatus.Accepted
+                    && !c.IsDeleted
+                    && c.DateUpdated >= start
+                    && c.DateUpdated <= end)
+                .GroupBy(c => c.DateUpdated.Date)
+                .Select(g => new IUserConnectionRepository.DateCountDto { Date = g.Key, Count = g.Count() })
+                .OrderBy(x => x.Date)
+                .ToListAsync();
+        }
     }
 }

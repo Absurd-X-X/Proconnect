@@ -81,5 +81,7 @@
         public ICollection<Message> SentMessages { get; set; } = new HashSet<Message>();
 
         public ICollection<ConversationParticipant> Participants { get; set; } = new HashSet<ConversationParticipant>();
+
+        public ICollection<AnalyticsEvent> AnalyticsEvents { get; set; } = new HashSet<AnalyticsEvent>();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Repositories;
+using Application.Services.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 using MediatR;
@@ -14,6 +15,8 @@ namespace Application.Commands.Messaging
             IConversationRepository conversationRepository,
             IConversationParticipantRepository participantRepository,
             IUserConnectionRepository connectionRepository,
+            IUserRepository userRepository,
+            INotificationService notificationService,
             IUnitOfWork unitOfWork) : IRequestHandler<AddParticipantCommand, Result<string>>
         {
             public async Task<Result<string>> Handle(AddParticipantCommand request, CancellationToken cancellationToken)
@@ -59,6 +62,22 @@ namespace Application.Commands.Messaging
                 });
 
                 await unitOfWork.SaveAsync();
+
+                var requesterUser = await userRepository.GetByIdAsync(request.RequestingUserId);
+                var requesterName = requesterUser is not null ? $"{requesterUser.FirstName} {requesterUser.LastName}".Trim() : "Someone";
+
+                await notificationService.SendNotificationAsync(
+                    recipientUserId: request.NewParticipantId,
+                    actorUserId: request.RequestingUserId,
+                    actorName: requesterName,
+                    actorAvatarUrl: requesterUser?.ProfilePictureUrl,
+                    title: "Added to a group",
+                    message: $"{requesterName} added you to \"{conversation.Title}\"",
+                    type: NotificationType.Message,
+                    sourceEntityType: NotificationSourceEntityType.Conversation,
+                    sourceEntityId: request.ConversationId,
+                    actionUrl: $"/messages.html?conversationId={request.ConversationId}",
+                    createdBy: request.RequestingUserId.ToString());
 
                 return Result<string>.Success(string.Empty, "Added to the group");
             }

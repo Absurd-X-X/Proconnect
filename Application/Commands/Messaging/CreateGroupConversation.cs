@@ -1,5 +1,6 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Repositories;
+using Application.Services.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 using MediatR;
@@ -15,6 +16,8 @@ namespace Application.Commands.Messaging
             IConversationRepository conversationRepository,
             IConversationParticipantRepository participantRepository,
             IUserConnectionRepository connectionRepository,
+            IUserRepository userRepository,
+            INotificationService notificationService,
             IUnitOfWork unitOfWork) : IRequestHandler<CreateGroupConversationCommand, Result<ConversationResponse>>
         {
             public async Task<Result<ConversationResponse>> Handle(CreateGroupConversationCommand request, CancellationToken cancellationToken)
@@ -69,6 +72,25 @@ namespace Application.Commands.Messaging
                 }
 
                 await unitOfWork.SaveAsync();
+
+                var creator = await userRepository.GetByIdAsync(request.UserId);
+                var creatorName = creator is not null ? $"{creator.FirstName} {creator.LastName}".Trim() : "Someone";
+
+                foreach (var inviteeId in invitees)
+                {
+                    await notificationService.SendNotificationAsync(
+                        recipientUserId: inviteeId,
+                        actorUserId: request.UserId,
+                        actorName: creatorName,
+                        actorAvatarUrl: creator?.ProfilePictureUrl,
+                        title: "Added to a group",
+                        message: $"{creatorName} added you to \"{conversation.Title}\"",
+                        type: NotificationType.Message,
+                        sourceEntityType: NotificationSourceEntityType.Conversation,
+                        sourceEntityId: conversation.Id,
+                        actionUrl: $"/messages.html?conversationId={conversation.Id}",
+                        createdBy: request.UserId.ToString());
+                }
 
                 return Result<ConversationResponse>.Success(
                     new ConversationResponse(conversation.Id, conversation.IsGroup, conversation.Title),

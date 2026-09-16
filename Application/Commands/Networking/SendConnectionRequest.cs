@@ -1,5 +1,6 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Repositories;
+using Application.Services.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 using MediatR;
@@ -13,6 +14,7 @@ namespace Application.Commands.Networking
         public class SendConnectionRequestHandler(
             IUserConnectionRepository connectionRepository,
             IUserRepository userRepository,
+            INotificationService notificationService,
             IUnitOfWork unitOfWork) : IRequestHandler<SendConnectionRequestCommand, Result<ConnectionResponse>>
         {
             public async Task<Result<ConnectionResponse>> Handle(SendConnectionRequestCommand request, CancellationToken cancellationToken)
@@ -30,6 +32,8 @@ namespace Application.Commands.Networking
                 }
 
                 var existing = await connectionRepository.GetConnectionBetweenUsersAsync(request.SenderId, request.ReceiverId);
+
+                UserConnection connection;
 
                 if (existing is not null)
                 {
@@ -51,21 +55,37 @@ namespace Application.Commands.Networking
                     connectionRepository.Update(existing);
                     await unitOfWork.SaveAsync();
 
-                    return Result<ConnectionResponse>.Success(
-                        new ConnectionResponse(existing.Id, existing.SenderId, existing.RecieverId, existing.ConnectionStatus, existing.DateCreated),
-                        "Connection request sent");
+                    connection = existing;
+                }
+                else
+                {
+                    connection = new UserConnection
+                    {
+                        SenderId = request.SenderId,
+                        RecieverId = request.ReceiverId,
+                        ConnectionStatus = ConnectionStatus.Pending,
+                        CreatedBy = request.SenderId.ToString()
+                    };
+
+                    await connectionRepository.AddAsync(connection);
+                    await unitOfWork.SaveAsync();
                 }
 
-                var connection = new UserConnection
-                {
-                    SenderId = request.SenderId,
-                    RecieverId = request.ReceiverId,
-                    ConnectionStatus = ConnectionStatus.Pending,
-                    CreatedBy = request.SenderId.ToString()
-                };
+                var sender = await userRepository.GetByIdAsync(request.SenderId);
+                var senderName = sender is not null ? $"{sender.FirstName} {sender.LastName}".Trim() : "Someone";
 
-                await connectionRepository.AddAsync(connection);
-                await unitOfWork.SaveAsync();
+                await notificationService.SendNotificationAsync(
+                    recipientUserId: request.ReceiverId,
+                    actorUserId: request.SenderId,
+                    actorName: senderName,
+                    actorAvatarUrl: sender?.ProfilePictureUrl,
+                    title: "New connection request",
+                    message: $"{senderName} sent you a connection request",
+                    type: NotificationType.ConnectionRequest,
+                    sourceEntityType: NotificationSourceEntityType.ConnectionRequest,
+                    sourceEntityId: connection.Id,
+                    actionUrl: "/connections.html?tab=requests",
+                    createdBy: request.SenderId.ToString());
 
                 return Result<ConnectionResponse>.Success(
                     new ConnectionResponse(connection.Id, connection.SenderId, connection.RecieverId, connection.ConnectionStatus, connection.DateCreated),
